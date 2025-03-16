@@ -1,0 +1,156 @@
+/* Overall page layout */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(145deg, black, #5D009F); /* 3D gradient background */
+  padding: 60px;
+  justify-content: center;
+  position: relative; /* For background elements */
+  overflow: hidden; /* To prevent background elements from overflowing */
+}
+
+/* Add a 3D background effect */
+.page-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 150%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 80%);
+  transform: translateX(-50%);
+  filter: blur(50px);
+  z-index: -1;
+}
+
+.page-container::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 300px;
+  height: 300px;
+  background: rgba(142, 68, 173, 0.6); /* Purple-colored floating sphere */
+  border-radius: 50%;
+  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1);
+  z-index: -1;
+  animation: float 8s ease-in-out infinite;
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Heading and subheading */
+.heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #FFFFFF; /* White for contrast */
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Softer shadow for depth */
+}
+
+.subheading2 {
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+/* Container layout */
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent container */
+  padding: 40px;
+  margin-top: 30px;
+  min-height: 400px;
+  border-radius: 20px;
+  backdrop-filter: blur(20px); /* Glass effect */
+  border: 1px solid rgba(142, 68, 173, 0.2);
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15); /* Softer shadow for depth */
+}
+
+/* Left Column */
+.left-content {
+  flex: 1;
+  padding-right: 60px;
+}
+
+.main-heading {
+  font-size: 2rem;
+  color: #FFFFFF;
+  margin-bottom: 25px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.subheading {
+  font-size: 1.2rem;
+  color: #FFFFFF;
+  max-width: 550px;
+  line-height: 1.8;
+  margin-bottom: 15px;
+}
+
+/* Right Column */
+.right-content {
+  flex: 1;
+  padding-left: 60px;
+  display: flex;
+  align-items: center;
+}
+
+/* Container for typewriter section */
+.mcq-section {
+  width: 100%;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  font-family: monospace;
+  color: #00397A;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(142, 68, 173, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+/* Hover effect */
+.mcq-section:hover {
+  transform: scale(1.05);
+}
+
+.mcq-display {
+  font-size: 1.1rem;
+  white-space: pre-wrap;
+  color: #00397A;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 700px;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 20px;
+  }
+  .left-content,
+  .right-content {
+    padding: 0;
+  }
+}

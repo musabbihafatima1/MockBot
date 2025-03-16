@@ -1,0 +1,144 @@
+/* Scoreboard Container */
+.scoreboard-container {
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgb(129, 71, 71);
+    background-size: cover;
+    background-position: center;
+}
+
+/* Score Circle */
+.score-circle {
+    background: rgb(248, 243, 243);
+    color: purple;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px rgba(17, 16, 16, 0.3);
+}
+
+.score-percentage {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Score Messages */
+.score-message {
+    color: orange;
+    font-size: 1.5rem;
+    margin-top: 10px;
+}
+
+.score-subtext {
+    font-size: 1rem;
+    color: #f1eaea;
+}
+
+/* Score Details Section */
+.score-details {
+    background: rgba(245, 243, 243, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    width: 60%;
+    max-width: 600px;
+    margin: 20px 0;
+}
+
+/* Score Box - Uniform size for all boxes */
+.score-box {
+    text-align: center;
+    background: #0a0909;
+    padding: 15px;
+    border-radius: 8px;
+    width: 120px;  /* Fixed width */
+    height: 100px; /* Fixed height */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Specific colors for Correct and Wrong */
+.score-box.correct {
+    color: #0f0;
+}
+
+.score-box.wrong {
+    color: #f00;
+}
+
+/* Buttons */
+.score-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.score-buttons button {
+    background: rgba(248, 243, 243, 0.8);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.score-buttons button:hover {
+    background: rgb(255, 255, 255);
+    color: purple;
+}
+
+/* Navbar */
+.navbar {
+    width: 100%;
+    height: 60px;
+    background-color: #450074;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    border-bottom: 2px solid white;
+}
+
+.navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #ffd700;
+}

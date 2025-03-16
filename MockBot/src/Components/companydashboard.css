@@ -1,0 +1,228 @@
+.sidebar-new {
+    position: fixed;  
+    width: 22%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: linear-gradient(145deg, black, #5D009F);
+    color: #fff;
+    padding: 20px;
+    box-shadow: -3px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .app-name-new {
+    font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 50px;
+ text-decoration: none;
+  transition: all 0.4s ease-in-out;
+  transform-origin: center;
+  letter-spacing: 1.5px;
+  }
+  
+  .app-name-new:hover {
+    color: #FFFFFF;
+    transform: scale(1.09) rotate(5deg);
+    text-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
+  }
+  
+  .profile-section-new {
+    display: flex;
+    align-items: center;
+    background-color: white; /* Adjust this based on the background you want */
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    color: black;
+    font-family: 'Arial', sans-serif;
+  }
+  .profile-section-new:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+  
+  .profile-icon-new {
+    background-color: #ff6d00; /* Icon background color */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  .profile-icon-new:hover{
+    transform: scale(1.2);
+    cursor: pointer;
+    box-shadow: black;
+  }
+  
+  .profile-info-new {
+    display: flex;
+    flex-direction: column;
+  }
+  .profile-name-new {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+  }
+  
+  .profile-plan-new {
+    font-size: 14px;
+    color: #b0b0b0;
+  }
+  
+  .menu-new {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+  
+    text-align: left;
+  }
+  
+  .menu-item-new {
+    width: 90%;
+    font-size: 18px;
+    margin: 20px 0;
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+   
+  }
+  
+  .menu-item-new:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    transform: scale(1.1);
+  }
+  
+  /* Screen component */
+ 
+  .screen-comp-new {
+    
+    position: fixed;      
+    right: 0;             
+    top: 0;               
+    width: 1030px;       
+    height: 93vh;         
+    margin: 10px;         
+    display: flex;        
+    overflow-y: auto;     
+   
+    
+}
+
+
+
+  .card-container-new {
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+    gap: 20px;
+    padding: 20px;
+    justify-items: center; /* Centers the items within each grid cell */
+  }
+  
+  .university-card-new {
+    background: linear-gradient(140deg, black, #5D009F);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: Arial, sans-serif; /* Professional font choice */
+    margin-left: 60px;
+  }
+  
+  /* University logo */
+  .university-logo-new {
+    width: 300px;
+    height: 100px;
+    margin-bottom: 10px;
+    object-fit: contain;
+  }
+  
+  /* University name */
+  .university-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff; /* Set to white */
+    margin-bottom: 10px;
+    text-align: center;
+    margin-top: -25px;
+  }
+  
+  /* Progress Circle */
+  .progress-circle-new {
+    --progress: 75;
+    width: 60px; /* Reduced size */
+    height: 60px; /* Reduced size */
+    border-radius: 50%;
+    background: conic-gradient(
+        #00c6ff calc(var(--progress) * 1%), 
+        #f7f7f7 calc(var(--progress) * 1%)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px; /* Smaller font size */
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  .progress-circle-new::before {
+    content: "";
+    position: absolute;
+    width: 50px; /* Adjusted to fit inside the smaller circle */
+    height: 50px; /* Adjusted to fit inside the smaller circle */
+    border-radius: 50%;
+    background: white;
+  }
+  
+  .progress-circle-new span {
+    position: relative;
+    z-index: 2;
+    font-size: 14px; /* Smaller text size */
+    color: #333;
+  }
+  
+  /* Add animation for the glowing effect */
+  @keyframes glowing {
+    0% {
+      box-shadow: 0 0 15px #00c6ff, 0 0 30px #00c6ff, 0 0 45px #00c6ff;
+    }
+    50% {
+      box-shadow: 0 0 30px #00c6ff, 0 0 60px #00c6ff, 0 0 90px #00c6ff;
+    }
+    100% {
+      box-shadow: 0 0 15px #00c6ff, 0 0 30px #00c6ff, 0 0 45px #00c6ff;
+    }
+  }
+  
+  .progress-circle-new:hover {
+    animation: glowing 1.5s infinite alternate;
+  }
+  
+  /* Progress animation */
+  @keyframes progressAnimation {
+    from {
+      --progress: 0;
+    }
+    to {
+      --progress: 75;
+    }
+  }
+  
+  .progress-circle-new.animate {
+    animation: progressAnimation 2s forwards;
+  }

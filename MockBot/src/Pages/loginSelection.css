@@ -1,0 +1,123 @@
+/* Container Styling */
+.signup-options-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(180deg,black, #5D009F);
+    color: #fff;
+    overflow: hidden;
+    perspective: 1000px;
+  }
+  
+  /* Enhanced Welcome Text Animation */
+  .welcome-text {
+    font-size: 3rem;
+    font-weight: bold;
+    opacity: 0;
+    animation: elongateFlipIn 2s ease forwards;
+  }
+  
+  /* Initial Button */
+  .select-button {
+    background: #FFFFFF;
+    color: #5D009F;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 15px 30px;
+    margin-top: 1rem;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.15);
+    transition: transform 0.4s ease-in-out, background 0.4s;
+    animation: fadeIn 1.5s ease 1s forwards;
+    opacity: 0;
+  }
+  
+  .select-button:hover {
+    transform: translateY(-5px) scale(1.05);
+    background: #e1e1e1;
+  }
+  
+  /* Options Styling */
+  .optionuser {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+    transform: scale(0.9);
+    animation: scaleIn 0.8s ease forwards;
+  }
+  
+  .option-card {
+    width: 220px;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease, background 0.4s, color 0.4s;
+    position: relative;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .option-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-10px) rotateY(3deg) scale(1.05);
+  }
+  
+  .candidate-card:hover {
+    color: #5D009F;
+  }
+  
+  .company-card:hover {
+    color: #4169E1;
+  }
+  
+  .option-card h2 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    transition: color 0.4s;
+  }
+  
+  .option-card p {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Keyframe Animations */
+  @keyframes elongateFlipIn {
+    0% {
+      opacity: 0;
+      transform: scaleX(0) rotateY(0);
+    }
+    50% {
+      opacity: 1;
+      transform: scaleX(1.5) rotateY(180deg);
+    }
+    100% {
+      transform: scaleX(1) rotateY(360deg);
+      opacity: 1; /* Ensures text stays visible */
+    }
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes scaleIn {
+    to {
+      transform: scale(1);
+    }
+  }
+  

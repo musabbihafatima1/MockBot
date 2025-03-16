@@ -1,0 +1,46 @@
+.questionbar {
+    width: 250px;
+    background-color: #2c2f3f;
+    
+    border-color: #7a70ed;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 50px; /* Moves the sidebar down */
+    height: calc(100vh - 50px); /* Adjusts height to prevent overflow */
+    overflow-y: auto;
+}
+
+.sidebar-item {
+    padding: 10px;
+    margin: 5px 0;
+    background: #414e61;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5); /* Off-white separator */
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-item:last-child {
+    border-bottom: none; /* Removes border from the last item */
+}
+
+.sidebar-item:hover {
+    background: #556080;
+}
+
+.sidebar-item.active {
+    background: #7a70ed;
+    font-weight: bold;
+}
+
+/* Optional: Add numbering to each question */
+.sidebar-item::before {
+    content: attr(data-index) ". ";
+    font-weight: bold;
+    margin-right: 8px;
+    color: rgba(255, 255, 255, 0.7);
+}

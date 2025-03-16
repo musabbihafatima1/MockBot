@@ -1,0 +1,152 @@
+/*@keyframes bounceIn {
+    0% {
+        transform: translateX(-100%) scale(0.5); 
+        opacity: 0; 
+    }
+    50% {
+        transform: translateX(10%) scale(1.1); 
+        opacity: 1; 
+    }
+    100% {
+        transform: translateX(0) scale(1); 
+    }
+}
+
+.card {
+    background: linear-gradient(90deg, rgba(142, 68, 173, 0.5), rgba(255, 255, 255, 0.5));
+    border-radius: 10px; 
+    padding: 20px; 
+    width: 28%; 
+    height: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    margin: 5px;
+    animation: bounceIn 1s ease forwards;
+    transition: transform 0.2s ease-in-out; 
+    will-change: transform;
+}
+
+.card:hover {
+    transform: scale(1.1); 
+    cursor: pointer;
+}
+
+h3 {
+    display: flex;
+    justify-content: center;
+}
+
+.icon {
+    font-size: 50px;
+    margin-bottom: 10px;
+    display: flex; 
+    justify-content: center;
+}
+*/
+@keyframes bounceIn {
+    0% {
+        transform: translateX(-100%) scale(0.5); 
+        opacity: 0; 
+    }
+    50% {
+        transform: translateX(10%) scale(1.1); 
+        opacity: 1; 
+    }
+    100% {
+        transform: translateX(0) scale(1); 
+    }
+}
+.flip-card {
+    width: 28%; /* Fixed width */
+    height: 250px; /* Fixed height */
+    perspective: 1000px; /* 3D perspective */
+    animation: bounceIn 1s ease forwards; /* Bounce-in effect */
+    margin: 20px;
+}
+
+.flip-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d; /* Enables 3D transformation for children */
+    transition: transform 0.6s ease-in-out; /* Smooth flip transition */
+}
+
+.flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg); /* Flip rotation */
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Ensures the reverse side is hidden when not facing the viewer */
+    border-radius: 10px; /* Consistent styling */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
+    padding: 10px;
+    margin-top: 5px;
+}
+
+.flip-card-front {
+    background: linear-gradient(140deg, black, #5D009F 50%);
+    background-size: cover;
+    background-position: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+.flip-card-front h3{
+    margin-top: 10px;
+}
+
+.flip-card-back {
+    padding: 25px;
+    background-color: white;
+    color: #333;
+    transform: rotateY(180deg); /* Back side rotation */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+.flip-card-back h3{
+    margin-bottom: 20px;
+}
+.flip-card-back button{
+    width: 120px;
+    height: 40px;
+    margin-top: 20px;
+    background: #5D009F;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.flip-card-back button:hover{
+    transform: scale(1.08);
+    background-color: #00397F;
+}
+.icon{
+    
+    width: 45%;
+    height: 50%;
+    perspective: 1000px;
+    border-radius: 70px; /* Optional rounded corners */
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.4), -5px -5px 15px rgba(255, 255, 255, 0.2);
+    transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+   
+}
+.icon:hover{
+    cursor: pointer;
+    transform: translateY(-10px) ;
+    /*box-shadow: 15px 15px 30px rgba(0, 0, 0, 0.6), -5px -5px 20px rgba(255, 255, 255, 0.3);*/
+}
+
+

@@ -1,0 +1,366 @@
+/* General container styling */
+/* EQ CSS */
+.eq-quiz-special {
+  background: linear-gradient(145deg, black, #5D009F); 
+  margin-left: -50px;
+  margin: -20px; /* Remove default body margins */
+  display: flex;
+  justify-content: center; /* Center div horizontally */
+  align-items: center; /* Center div vertically */
+  height: 100vh; /* Full height for body to support centering */
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
+}
+
+/* Card Styling */
+.eq-cardit {
+  width: 400px;
+  height: auto;
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease-in-out;
+  margin-top: -20px; 
+}
+
+.eq-cardit.flip {
+  transform: rotateY(90deg);
+}
+
+.eq-cardit h2 {
+  color: #333;
+  margin-top: -10px;
+}
+
+.eq-questionred {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.eq-quiz-timer {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  color: #5D009F;
+  font-size: 18px;
+  border-radius: 5px;
+  z-index: 100;
+  margin-left: -290px;
+}
+
+.eq-quiz-timerr {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 7px;
+  color: #5D009F;
+  font-size: 18px;
+  border-radius: 5px;
+  z-index: 100;
+  margin: 4px;
+  margin-left: -130px;
+}
+
+/* Options Styling */
+.eq-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.eq-option {
+  color: white;
+  background-color: #5d009f;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.eq-option:hover {
+  background-color: #450070;
+}
+
+.eq-option.selected {
+  background-color: #3ac569 !important;
+}
+
+/* Next button */
+.eq-next-btn,
+.eq-submit-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.eq-next-btn:disabled {
+  background-color: grey;
+}
+
+.eq-next-btn:hover:enabled {
+  background-color: #0056b3;
+}
+
+/* Score Modal - Centered Overlay */
+.eq-score-display {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.eq-score-box {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 30px 40px;
+  text-align: center;
+  box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+}
+
+.eq-score-box h3 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #000;
+}
+
+.eq-total-scores {
+  font-size: 18px;
+  color: #000;
+  line-height: 1.6;
+}
+
+.eq-total-scores strong {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+/* Result Text Styling */
+.eq-result {
+  font-size: 20px; /* Reduced size */
+  font-weight: 500;
+  color: #5D009F; /* Primary theme color */
+  padding: 10px 15px;
+  border-radius: 10px;
+  background-color: #f1f1f1;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  text-align: center;
+}
+
+.eq-result:hover {
+  transform: scale(1.05);
+}
+
+.eq-back-arroww {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+/* IQ CSS */
+.iq-bgiq {
+  background: linear-gradient(145deg, black, #5D009F); 
+  margin-left: -50px;
+  margin: -20px; /* Remove default body margins */
+  display: flex;
+  justify-content: center; /* Center div horizontally */
+  align-items: center; /* Center div vertically */
+  height: 100vh; /* Full height for body to support centering */
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
+}
+
+.iq-quiz-container {
+  padding: 20px;
+  max-width: 100%;
+  margin: auto;
+  font-family: 'Arial', sans-serif;
+  align-items: center;
+  justify-content: center;
+}
+
+.iq-quiz-back-arrow {
+  margin-left: -250px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.iq-quiz-score-display {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  animation: fadeIn 0.5s forwards;
+}
+
+.iq-quiz-score-box {
+  color: #333;
+  width: 150%;
+  max-width: 480px; /* Ensures the box doesn't stretch too much on large screens */
+  padding: 30px 40px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0px 12px 40px rgba(0, 0, 0, 0.1); /* Softer, larger shadow for depth */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* More breathing room between content */
+  transform: translateY(-20px);
+  opacity: 0;
+  animation: popUp 0.6s ease-out forwards;
+}
+
+@keyframes popUp {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.iq-quiz-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  background: #fff;
+  transition: transform 0.6s ease;
+}
+
+.iq-quiz-card.flipping {
+  transform: rotateY(90deg);
+}
+
+.iq-quiz-card p {
+  color: #333;
+  text-align: center;
+}
+
+.iq-quiz-card h2 {
+  color: #333;
+  text-align: center;
+}
+
+.iq-quiz-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.iq-quiz-option {
+  margin: 10px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.iq-quiz-option:hover {
+  transform: scale(1.05);
+  border-width: 3px;
+}
+
+.iq-quiz-option-selected {
+  border-color: #4CAF50;
+  background: #e8f5e9;
+}
+
+.iq-quiz-option-image {
+  max-width: 80px;
+  height: auto;
+}
+
+.iq-quiz-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.iq-quiz-nav-btn,
+.iq-quiz-submit-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #4CAF50;
+  color: white;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.iq-quiz-nav-btn:hover,
+.iq-quiz-submit-btn:hover {
+  background: #45a049;
+}
+
+.iq-quiz-question-image {
+  display: block;
+  margin: 20px auto;
+  max-width: 400px;
+  height: 200px;
+  border-radius: 5px;
+}

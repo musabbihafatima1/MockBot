@@ -1,0 +1,118 @@
+/* Container */
+.interview-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 90vh;
+    padding: 40px;
+    background: linear-gradient(145deg, black, #5D009F); /* Light background */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: -100px;
+  }
+  
+  /* Left Section */
+  .left-section {
+    flex: 1;
+    padding-right: 20px;
+  }
+  
+  .left-section h1 {
+    font-size: 2.5rem;
+    color: white; /* Dark text color */
+    font-weight: 700;
+    line-height: 1.4;
+    transition: transform 0.3s ease;
+  }
+  .left-section h1:hover{
+     transform: scale(1.09);
+     color: #00397A;
+  }
+  
+  /* Right Section */
+  .right-section {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .interview-comparison {
+    width: 640px;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+  }
+  
+  .interview-comparison h4 {
+    font-size: 1rem;
+    color: white;
+  }
+  
+  /* Comparison Rows */
+  .comparison-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+  }
+  
+  /* Without AI - Left column */
+  .without-ai {
+    height: 60px;
+    width: 180px;
+    background-color: #fde6e6;
+    padding: 15px 25px;
+    border-radius: 10px;
+    color: #d0021b; /* Red text */
+    font-weight: 500;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .cross-icon {
+    margin-right: 10px;
+    font-size: 1.5rem;
+  }
+  
+  /* Arrow */
+  .arrow {
+    font-size: 1.5rem;
+    color: white; /* Dark arrow */
+  }
+  
+  /* With AI - Right column */
+  .with-ai {
+    height: 60px;
+    width: 270px;
+    background-color: #007BFF;
+    padding: 15px 25px;
+    border-radius: 10px;
+    color: #ffffff; /* White text */
+    font-weight: 500;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .check-icon {
+    margin-right: 10px;
+    font-size: 1.5rem;
+  }
+  
+  /* Media Query for Responsiveness */
+  @media (max-width: 768px) {
+    .interview-container {
+      flex-direction: column;
+    }
+    
+    .left-section {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+  
+    .right-section {
+      align-items: center;
+    }
+  }
+  

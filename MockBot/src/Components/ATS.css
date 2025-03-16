@@ -1,0 +1,211 @@
+/* Main container */
+.ats-resume-upload-container {
+    background: linear-gradient(140deg, black, #5D009F 45%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Title */
+  .ats-title {
+    color: #ffffff;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+  animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  /* Form */
+  .ats-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .wordlabel {
+    color:white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  input[type="file"] {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 250px;
+  font-size: 1rem;
+  cursor: pointer;
+    
+  }
+  
+  input[type="file"]:focus {
+    outline: none;
+    box-shadow: 0 0 10px #fff, 0 0 10px #5d009f, 0 0 15px #5d009f;
+  }
+  
+  /* Submit Button */
+  .submit-btn {
+    padding: 10px 20px;
+  background: linear-gradient(135deg, #6b5bff, #4f46e5);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease-in-out;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .submit-btn:hover {
+    background: linear-gradient(135deg, #4f46e5, #6b5bff);
+    box-shadow: 0 0 10px #fff, 0 0 10px #5d009f, 0 0 20px #fff;
+    
+  }
+  
+  /* Result Messages */
+  .resume-status {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+    padding: 20px;
+    border-radius: 10px;
+    transition: all 0.5s ease;
+  }
+  
+  .accepted {
+    background-color: #008080; /* Teal for accepted */
+  }
+  
+  .rejected {
+    background-color: #ff0000; /* Red for rejected */
+  }
+  
+  @keyframes ButtonAnimation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  /* Animations */
+  .ats-resume-upload-container,
+  input {
+    transition: ButtonAnimation 0.3s ease;
+    
+  }
+  button{
+    transition: background 0.3s ease-in-out;
+ 
+  }
+
+  .namediff{
+    margin-top:-140px;
+    margin-bottom: 170px;
+    margin-Right: 85%;
+    font-size: 24px;
+    font-weight: bold;
+    color: #FFFFFF;
+    transition: all 0.4s ease-in-out;
+    transform-origin: center;
+    letter-spacing: 1.5px;
+    
+  }
+  .namediff:hover{
+    transform: scale(1.09) rotate(5deg);
+    text-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
+   
+  }
+
+  /*Pop-up box*/
+  
+  /* Popup Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Dark overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Popup Box */
+.popup-box {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 350px;
+}
+
+.popup-box h2 {
+  margin: 15px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.popup-box p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Popup Icon Container */
+.popup-icon {
+  background-color: #e0e0e0; /* Light gray background for the icon */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 15px auto;
+}
+
+.popup-icon::before {
+  content: '';
+  font-size: 2rem;
+}
+
+.popup-box.accepted .popup-icon::before {
+ 
+  color: #4CAF50; /* Green tick */
+}
+
+.popup-box.rejected .popup-icon::before {
+  
+  color: #f44336; /* Red cross */
+}
+
+/* Close Button */
+.close-btn {
+  background-color: #5d009f;
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  font-size: 1rem;
+  border-radius: 5px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background-color: #00397f;
+}
+
+
