@@ -24,6 +24,7 @@ import Admindashboard from './Pages/Admin/Admindashboard';
 import Registeredcompanies from './Pages/Admin/RegisteredCompanies';
 import AdminLogin from './Pages/Admin/AdminLogin';
 import AI from './Pages/AI/Practice';
+import Review from './Pages/Review';
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
           <Route path="/admin" element={<Admindashboard />} />
         <Route path="/registered-companies" element={<Registeredcompanies />} />
         <Route path="/practice" element={<AI />} />
+        <Route path ='/review' element={<Review/>}/>
         </Routes>
       </Router>
     </div>

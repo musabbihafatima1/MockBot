@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
       date: { type: Date, default: Date.now },
     },
   ],
+  technicalScores: [{
+    score: Number,
+    date: { type: Date, default: Date.now }
+  }],
 });
 
 

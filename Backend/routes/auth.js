@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path'); 
 
 // Configure Nodemailer transport
-const transporter = nodemailer.createTransport({
+/*const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'maryammomomalik@gmail.com', // Your email
@@ -218,7 +218,7 @@ router.post('/saveEqscore', async (req, res) => {
     }
     res.status(500).json({ message: 'Error saving score' });
   }
-});
+});*/
 
 //code end for university mailing.
 
@@ -291,7 +291,7 @@ const authMiddleware = (req, res, next) => {
 
 
 // Route to save EQ score
-/*router.post('/saveEqscore', async (req, res) => {
+router.post('/saveEqscore', async (req, res) => {
   const { score } = req.body;
 
   // Assuming the token is passed as a Bearer token
@@ -343,9 +343,9 @@ const authMiddleware = (req, res, next) => {
 
     res.status(500).json({ message: 'Error saving score' });
   }
-});*/
+});
 
-/*router.post('/saveIqscore', async (req, res) => {
+router.post('/saveIqscore', async (req, res) => {
   const { score } = req.body;
 
   // Assuming the token is passed as a Bearer token
@@ -398,7 +398,7 @@ const authMiddleware = (req, res, next) => {
     res.status(500).json({ message: 'Error saving score' });
   }
 });
-*/
+
 
 // Fetch user profile
 router.get('/profile', async (req, res) => {
@@ -483,6 +483,127 @@ router.get('/profilename', async (req, res) => {
   } catch (error) {
     console.error('Error in GET /profile:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get User Scores (EQ and IQ)
+router.get('/scores', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: 'Authentication token missing' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Calculate latest EQ score percentage (out of 132)
+    const eqPercentage = user.eqScores && user.eqScores.length > 0 
+      ? Math.round((user.eqScores[user.eqScores.length - 1].score / 132) * 100)
+      : 0;
+
+    // Calculate latest IQ score percentage (out of 12)
+    const iqPercentage = user.iqScores && user.iqScores.length > 0 
+      ? Math.round((user.iqScores[user.iqScores.length - 1].score / 12) * 100)
+      : 0;
+
+    res.json({
+      eqScore: eqPercentage,
+      iqScore: iqPercentage,
+      hasEq: user.eqScores && user.eqScores.length > 0,
+      hasIq: user.iqScores && user.iqScores.length > 0
+    });
+
+  } catch (error) {
+    console.error('Error fetching scores:', error);
+    res.status(500).json({ message: 'Error fetching scores' });
+  }
+});
+
+// Save Technical Score
+router.post('/saveTechnicalScore', async (req, res) => {
+  const { score } = req.body;
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Authorization token is missing or invalid' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const numericScore = parseFloat(score);
+    if (isNaN(numericScore) || numericScore < 0 || numericScore > 50) {
+      return res.status(400).json({ message: 'Invalid Technical score. Must be between 0 and 50.' });
+    }
+
+    if (!user.technicalScores) {
+      user.technicalScores = [];
+    }
+
+    user.technicalScores.push({ score: numericScore });
+    await user.save();
+
+    res.json({ message: 'Technical Score saved successfully' });
+  } catch (error) {
+    console.error('Error saving score:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    res.status(500).json({ message: 'Error saving score' });
+  }
+});
+
+// Get All Scores
+router.get('/scores', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: 'Authentication token missing' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Calculate percentages
+    const iqPercentage = user.iqScores?.length > 0 
+      ? Math.round((user.iqScores[user.iqScores.length - 1].score / 12) * 100)
+      : 0;
+
+    const eqPercentage = user.eqScores?.length > 0 
+      ? Math.round((user.eqScores[user.eqScores.length - 1].score / 132) * 100)
+      : 0;
+
+    const technicalPercentage = user.technicalScores?.length > 0
+      ? Math.round((user.technicalScores[user.technicalScores.length - 1].score / 50) * 100)
+      : 0;
+
+    res.json({
+      iq: iqPercentage,
+      eq: eqPercentage,
+      technical: technicalPercentage,
+      hasIq: user.iqScores?.length > 0,
+      hasEq: user.eqScores?.length > 0,
+      hasTechnical: user.technicalScores?.length > 0
+    });
+  } catch (error) {
+    console.error('Error fetching scores:', error);
+    res.status(500).json({ message: 'Error fetching scores' });
   }
 });
 

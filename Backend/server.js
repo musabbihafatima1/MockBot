@@ -1,6 +1,6 @@
 const express = require('express');
 const fileRoutes = require('./routes/fileRoutes');
-const aiRoutes= require('./routes/aiRoute');
+//const aiRoutes= require('./routes/aiRoute');
 const adminRoutes= require ('./routes/adminRoute');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -24,8 +24,9 @@ app.use('/api/files', fileRoutes);
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/compauth', require('./routes/compauth'));
 app.use("/api/eq-questions", require('./routes/eq'));
-app.use('/api', aiRoutes);
+//app.use('/api', aiRoutes);
 app.use('/api/admin', adminRoutes);
+
 
 
 // Start the server
