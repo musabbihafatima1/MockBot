@@ -17,7 +17,7 @@ const questions = [
     options: ["Strongly disagree", "Disagree", "Nuetral", "Agree", "Strongly Agree"],
 
   },
-  /*{
+  {
     questionText: "Other people find it easy to confide in me.",
     options: ["Strongly disagree", "Disagree", "Nuetral", "Agree", "Strongly Agree"],
     
@@ -160,7 +160,7 @@ const questions = [
   {
     questionText: "I use good moods to help myself keep trying in the face of obstacles.",
     options: ["Strongly disagree", "Disagree", "Nuetral", "Agree", "Strongly Agree"],
-  },*/
+  },
   {
     questionText: "It is difficult for me to understand why people feel the way they do.",
     options: ["Strongly disagree", "Disagree", "Nuetral", "Agree", "Strongly Agree"],

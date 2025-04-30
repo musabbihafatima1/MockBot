@@ -1,162 +1,9 @@
 
-// import { useNavigate } from "react-router-dom";
-// import React, { useState, useEffect } from "react";
-// import "./IQquiz.css";
-
-// function Quiz({ questions }) {
-//   const [currentQuestion, setCurrentQuestion] = useState(0);
-//   const [selectedAnswer, setSelectedAnswer] = useState(null);
-//   const [isFlipping, setIsFlipping] = useState(false);
-//   const [totalScore, setTotalScore] = useState(0);
-//   const [quizFinished, setQuizFinished] = useState(false);
-//   const [timer, setTimer] = useState(60); // Timer state
-//   const navigate = useNavigate();
-
-//   // Timer logic
-//   useEffect(() => {
-//     if (!quizFinished && timer > 0) {
-//       const interval = setInterval(() => {
-//         setTimer((prevTimer) => prevTimer - 1);
-//       }, 1000);
-//       return () => clearInterval(interval);
-//     }
-
-//     if (timer === 0 && !quizFinished) {
-//       handleSubmit(); // Submit the quiz when the timer runs out
-//     }
-//   }, [timer, quizFinished]);
-
-//   const handleAnswer = (index) => setSelectedAnswer(index);
-
-//   const handleNext = () => {
-//     if (selectedAnswer !== null) {
-//       // Add 1 to totalScore if the answer is correct
-//       if (selectedAnswer === questions[currentQuestion].correctAnswer) {
-//         setTotalScore((prev) => prev + 1);
-//       }
-//     }
-
-//     setIsFlipping(true);
-//     setTimeout(() => {
-//       setSelectedAnswer(null);
-//       setCurrentQuestion((prev) => prev + 1);
-//       setIsFlipping(false);
-//     }, 600);
-//   };
-
-//   const handlePrevious = () => {
-//     setIsFlipping(true);
-//     setTimeout(() => {
-//       setSelectedAnswer(null);
-//       setCurrentQuestion((prev) => prev - 1);
-//       setIsFlipping(false);
-//     }, 600);
-//   };
-
-//   const saveScore = async (score) => {
-//     try {
-//       const token = localStorage.getItem("token");
-//       const response = await fetch("http://localhost:5000/api/auth/saveIqscore", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({ score }),
-//       });
-//       const data = await response.json();
-//       alert(data.message);
-//     } catch (error) {
-//       console.error("Error saving score:", error);
-//     }
-//   };
-
-//   const handleSubmit = async () => {
-//     // Save the score to the backend
-//     saveScore(totalScore);
-//     setQuizFinished(true);
-//   };
-
-//   const isLastQuestion = currentQuestion === questions.length - 1;
-//   const isFirstQuestion = currentQuestion === 0;
-
-//   return (
-//     <div className="iq-bgiq">
-//       <div className="iq-quiz-container">
-//         <button className="iq-quiz-back-arrow" onClick={() => navigate("/Userpage")}>
-//           ←
-//         </button>
-
-//         {quizFinished ? (
-//           <div className="iq-quiz-score-display">
-//             <div className="iq-quiz-score-box">
-//               <h3>Quiz Completed!</h3>
-//               <p>Your Total Score: <strong>{totalScore}/12</strong></p>
-//             </div>
-//           </div>
-//         ) : (
-//           <div className={`iq-quiz-card ${isFlipping ? "flipping" : ""}`}>
-//             <div className="iq-quiz-timer">Time Left: {timer}s</div> {/* Timer display */}
-//             <h2>Question {currentQuestion + 1}</h2>
-//             <p>{questions[currentQuestion].questionText}</p>
-//             {questions[currentQuestion].image && (
-//               <img
-//                 src={questions[currentQuestion].image}
-//                 alt="Question Visual"
-//                 className="iq-quiz-question-image"
-//               />
-//             )}
-//             <div className="iq-quiz-options">
-//               {questions[currentQuestion].options.map((option, index) => (
-//                 <div
-//                   key={index}
-//                   className={`iq-quiz-option ${selectedAnswer === index ? "iq-quiz-option-selected" : ""}`}
-//                   onClick={() => handleAnswer(index)}
-//                 >
-//                   <img src={option.src} alt={option.label} className="iq-quiz-option-image" />
-//                 </div>
-//               ))}
-//             </div>
-
-//             <div className="iq-quiz-navigation">
-//               <button
-//                 className="iq-quiz-nav-btn"
-//                 onClick={handlePrevious}
-//                 disabled={isFirstQuestion}
-//               >
-//                 Previous
-//               </button>
-//               {isLastQuestion ? (
-//                 <button
-//                   className="iq-quiz-submit-btn"
-//                   onClick={handleSubmit}
-//                   disabled={selectedAnswer === null}
-//                 >
-//                   Submit
-//                 </button>
-//               ) : (
-//                 <button
-//                   className="iq-quiz-nav-btn"
-//                   onClick={handleNext}
-//                   disabled={selectedAnswer === null}
-//                 >
-//                   Next
-//                 </button>
-//               )}
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Quiz;
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "../Components/Navbar";
-import Baro from "../Components/baro";
+import Baro from './baro';
 import clickSound from "../Assets/click.mp3";
 
 function Quiz({ questions }) {
@@ -208,9 +55,9 @@ function Quiz({ questions }) {
           options: shuffledQuestions[currentQuestion].options,
         },
       ]);
+      setSelectedAnswer(null);
+      setCurrentQuestion((prev) => prev + 1);
     }
-    setSelectedAnswer(null);
-    setCurrentQuestion((prev) => prev + 1);
   };
 
   const handlePrevious = () => {
@@ -236,257 +83,321 @@ function Quiz({ questions }) {
     }
   };
 
-  const handleSubmit = async () => {
-    await saveScore(totalScore);
-    setQuizFinished(true);
-  
-    navigate("/scoreboard", {
-      state: {
-        correct: totalScore,
-        totalQuestions: shuffledQuestions.length,
-        userAnswers: [
-          ...userAnswers,
-          {
-            question: shuffledQuestions[currentQuestion].questionText,
-            selected: selectedAnswer,
-            correct: shuffledQuestions[currentQuestion].correctAnswer,
-            options: shuffledQuestions[currentQuestion].options,
-          },
-        ],
-        quizType: "iq", 
-      },
-    });
-  };
-  
+  const handleSubmit = useCallback(async () => {
+    if (!quizFinished) {
+      let finalScore = totalScore;
+      const updatedUserAnswers = [...userAnswers];
+      
+      if (selectedAnswer !== null) {
+        const isCorrect = selectedAnswer === shuffledQuestions[currentQuestion].correctAnswer;
+        if (isCorrect) finalScore += 1;
+        updatedUserAnswers.push({
+          question: shuffledQuestions[currentQuestion].questionText,
+          selected: selectedAnswer,
+          correct: shuffledQuestions[currentQuestion].correctAnswer,
+          options: shuffledQuestions[currentQuestion].options,
+        });
+      }
+
+      await saveScore(finalScore);
+      setQuizFinished(true);
+
+      navigate("/scoreboard", {
+        state: {
+          correct: finalScore,
+          totalQuestions: shuffledQuestions.length,
+          userAnswers: updatedUserAnswers,
+          quizType: "iq",
+        },
+      });
+    }
+  }, [quizFinished, totalScore, userAnswers, selectedAnswer, currentQuestion, shuffledQuestions, navigate]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && !quizFinished) {
+        handleSubmit();
+      }
+    };
+
+    const handleBeforeUnload = (e) => {
+      if (!quizFinished) {
+        e.preventDefault();
+        handleSubmit();
+        return '';
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [handleSubmit, quizFinished]);
 
   const isLastQuestion = currentQuestion === shuffledQuestions.length - 1;
   const isFirstQuestion = currentQuestion === 0;
 
+  if (shuffledQuestions.length === 0) return <div>Loading...</div>;
+
   return (
-    <div
-      style={{
-        margin: 0,
-        fontFamily: "Poppins, sans-serif",
-        backgroundColor: "white",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        height: "100vh",
-        overflow: "hidden",
-      }}
-    >
-      <Navbar />
-      <div style={{ display: "flex", flexDirection: "row", width: "100%", height: "100vh" }}>
+    <div className="quiz-container">
+      <Navbar timer={timer} />
+      <div className="quiz-content">
         <Baro
           questions={shuffledQuestions}
           currentQuestion={currentQuestion}
           setCurrentQuestion={setCurrentQuestion}
         />
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+
+        <motion.div
+          className="quiz-card"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <motion.div
-            style={{
-              width: "700px",
-              minHeight: "620px",
-              borderRadius: "8px",
-              backgroundColor: "#5D009F",
-              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.3)",
-              padding: "20px",
-              marginTop:"80px",
-              marginLeft:'100px',
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {/* Timer */}
-            <div
-              style={{
-                backgroundColor: "#212832",
-                color: "yellow",
-                fontSize: "1.2rem",
-                padding: "12px",
-                borderRadius: "50px 50px 0 0",
-                textAlign: "center",
-                width: "100px",
-                height: "50px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: "-5px",
-              }}
-            >
-              {timer}s
-            </div>
+         
 
-            {/* Question */}
-            <div
-              style={{
-                backgroundColor: "#2a2132",
-                color: "#fff",
-                padding: "15px",
-                fontSize: "1.2rem",
-                fontWeight: "600",
-                borderRadius: "8px",
-                textAlign: "center",
-                width: "100%",
-                marginBottom: "15px",
-                minHeight: "100px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {shuffledQuestions[currentQuestion]?.questionText}
-            </div>
+          <div className="question">
+            {shuffledQuestions[currentQuestion]?.questionText}
+          </div>
 
-            {/* Image */}
-            {shuffledQuestions[currentQuestion]?.image && (
-              <img
-                src={shuffledQuestions[currentQuestion].image}
-                alt="Visual"
-                style={{
-                  maxWidth: "200px",
-                  height: "auto",
-                  borderRadius: "8px",
-                  marginBottom: "15px",
-                }}
-              />
-            )}
+          {shuffledQuestions[currentQuestion]?.image && (
+            <img
+              src={shuffledQuestions[currentQuestion].image}
+              alt="Visual"
+              className="question-image"
+            />
+          )}
 
-            {/* Options */}
-            <div
-              style={{
-                margin: "20px 0",
-                width: "100%",
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-                gap: "10px",
-              }}
-            >
-              {shuffledQuestions[currentQuestion]?.options.map((option, index) => (
-                <motion.div
-                  key={index}
-                  style={{
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #7A70ED",
-                    padding: "10px",
-                    borderRadius: "12px",
-                    textAlign: "center",
-                    color: "#000",
-                    cursor: "pointer",
-                    flex: "0 0 calc(50% - 10px)",
-                    boxSizing: "border-box",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    ...(selectedAnswer === index && {
-                      backgroundColor: "#dae90bb5",
-                      color: "#000",
-                    }),
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleAnswer(index)}
-                >
+          <div className="options">
+            {shuffledQuestions[currentQuestion]?.options.map((option, index) => (
+              <motion.div
+                key={index}
+                className={`option ${selectedAnswer === index ? 'selected' : ''}`}
+                onClick={() => handleAnswer(index)}
+                whileHover={{ scale: 1.02 }}
+              >
+                {option.label && (
                   <img
                     src={option.src}
                     alt={option.label}
-                    style={{ maxWidth: "50px", margin: "0 10px" }}
+                    className="option-image"
                   />
-                </motion.div>
-              ))}
-            </div>
+                )}
+                {option.text && <span>{option.text}</span>}
+              </motion.div>
+            ))}
+          </div>
 
-            {/* Navigation Buttons */}
-            <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+          <div className="navigation">
+            <motion.button
+              className="nav-btn"
+              onClick={handlePrevious}
+              disabled={isFirstQuestion}
+              whileTap={{ scale: 0.9 }}
+            >
+              Prev
+            </motion.button>
+
+            {isLastQuestion ? (
               <motion.button
-                style={{
-                  padding: "12px 24px",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  borderRadius: "5px",
-                  backgroundColor: "#7A70ED",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                  height: "60px",
-                  width: "80px",
-                  ...(isFirstQuestion && {
-                    opacity: 0.5,
-                    pointerEvents: "none",
-                  }),
-                }}
-                onClick={handlePrevious}
-                disabled={isFirstQuestion}
+                className="nav-btn submit-btn"
+                onClick={handleSubmit}
+                disabled={selectedAnswer === null}
+                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                Submit
+              </motion.button>
+            ) : (
+              <motion.button
+                className="nav-btn"
+                onClick={handleNext}
+                disabled={selectedAnswer === null}
                 whileTap={{ scale: 0.9 }}
               >
-                Prev
+                Next
               </motion.button>
-
-              {isLastQuestion ? (
-                <motion.button
-                  style={{
-                    padding: "12px 24px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    borderRadius: "5px",
-                    backgroundColor: "#7A70ED",
-                    color: "white",
-                    border: "none",
-                    cursor: "pointer",
-                    height: "60px",
-                    width: "100px",
-                    ...(selectedAnswer === null && {
-                      opacity: 0.5,
-                      pointerEvents: "none",
-                    }),
-                  }}
-                  onClick={handleSubmit}
-                  disabled={selectedAnswer === null}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  Submit
-                </motion.button>
-              ) : (
-                <motion.button
-                  style={{
-                    padding: "12px 24px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    borderRadius: "5px",
-                    backgroundColor: "#7A70ED",
-                    color: "white",
-                    border: "none",
-                    cursor: "pointer",
-                    height: "60px",
-                    width: "80px",
-                    ...(selectedAnswer === null && {
-                      opacity: 0.5,
-                      pointerEvents: "none",
-                    }),
-                  }}
-                  onClick={handleNext}
-                  disabled={selectedAnswer === null}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  Next
-                </motion.button>
-              )}
-            </div>
-          </motion.div>
-        </div>
+            )}
+          </div>
+        </motion.div>
       </div>
+
+      <style jsx>{`
+        .quiz-container {
+          background-color: #ece8ee;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          overflow-x: hidden;
+          position: relative;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        .quiz-content {
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          width: 100%;
+          padding-top: 85px;
+          padding-left: 90px;
+          position: relative;
+          gap: 20px;
+        }
+
+        .quiz-card {
+          width: 100%;
+          max-width: 550px;
+          background-color: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          padding: 25px;
+          margin-left: 100px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          min-height: 380px;
+        }
+
+        
+
+        .question {
+          margin-top: 5px;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #333;
+          text-align: center;
+          margin-bottom: 20px;
+          padding: 0 10px;
+          word-break: break-word;
+        }
+
+        .question-image {
+          max-width: 200px;
+          height: auto;
+          border-radius: 8px;
+          margin-bottom: 15px;
+        }
+
+        .options {
+          width: 100%;
+          margin-top: 10px;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+        }
+
+        .option {
+          background-color: #f0f0f0;
+          padding: 10px 16px;
+          border-radius: 12px;
+          color: #333;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background 0.3s;
+          min-height: 80px;
+          text-align: center;
+        }
+
+        .option:hover {
+          background-color: #d6c8f7;
+        }
+
+        .option.selected {
+          background-color: #d6c8f7;
+          color: #000;
+          font-weight: bold;
+        }
+
+        .option-image {
+          max-width: 50px;
+          margin-bottom: 8px;
+        }
+
+        .navigation {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          margin-top: 20px;
+        }
+
+        .nav-btn {
+          background: #7A70ED;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: background 0.3s;
+        }
+
+        .nav-btn:hover {
+          background: #5D009F;
+        }
+
+        .nav-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .submit-btn {
+          background: #4CAF50;
+        }
+
+        .submit-btn:hover {
+          background: #3e8e41;
+        }
+
+        @media (max-width: 768px) {
+          .quiz-content {
+            padding-left: 0;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .quiz-card {
+            max-width: 90%;
+            margin-left: 0;
+            margin-top: 20px;
+          }
+
+          .options {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .quiz-card {
+            max-width: 95%;
+            min-height: 340px;
+            padding: 18px;
+          }
+
+          .question {
+            font-size: 1rem;
+            margin-top: 40px;
+          }
+
+          .options {
+            grid-template-columns: 1fr;
+          }
+
+          .option {
+            font-size: 0.85rem;
+            padding: 8px 14px;
+          }
+        }
+      `}</style>
     </div>
   );
 }

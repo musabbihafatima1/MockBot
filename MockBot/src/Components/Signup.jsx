@@ -12,7 +12,7 @@ const Signup = () => {
     username: "",
     email: "",
     password: "",
-    university: "riphah",
+    university: "Riphah International University",
   });
 
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Signup = () => {
       const data = await response.json();
       if (response.ok) {
         toast.success(data.message); // Toast for successful signup
-        navigate("/userpage"); // Redirect to user page after signup
+        setIsSignup(false);  // Redirect to user page after signup
       } else {
         toast.error(data.message); // Toast for signup error
       }
@@ -164,11 +164,17 @@ const Signup = () => {
                     fontSize: "1rem",
                   }}
                 >
-                  <option value="riphah">Riphah International University</option>
-                  <option value="nust">NUST University</option>
-                  <option value="comsats">COMSATS University</option>
-                  <option value="giki">GIKI University</option>
-                  <option value="cust">CUST University</option>
+                  <option value="Riphah International University">Riphah International University</option>
+                  <option value="NUST University">NUST University</option>
+                  <option value="COMSATS University">COMSATS University</option>
+                  <option value="GIKI University">GIKI University</option>
+                  <option value="CUST University">CUST University</option>
+                  <option value="FAST University">FAST University</option>
+                  <option value="NET University">NET University</option>
+                  <option value="PEAS University">PEAS University</option>
+                  <option value="Dawood University">Dawood University</option>
+                  <option value="IST University">IST University</option>
+                  <option value="Mehran University">Mehran University</option>
                 </select>
               </>
             )}

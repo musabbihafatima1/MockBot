@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {  FaAngleUp , FaAngleDown } from 'react-icons/fa'
 import './FAQ.css';
 
 const FAQ = () => {
@@ -45,7 +46,7 @@ const FAQ = () => {
           >
             <div className="faq-question">
               <p>{faq.question}</p>
-              <span className="arrow">{faq.open ? "▲" : "▼"}</span>
+              <span className="arrow">{faq.open ? <FaAngleUp/> : <FaAngleDown/>}</span>
             </div>
             {faq.open && <div className="faq-answer">{faq.answer}</div>}
           </div>

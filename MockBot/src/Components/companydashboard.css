@@ -31,7 +31,7 @@
 /* ====== Sidebar ====== */
 .dashboard-sidebar {
   width: 240px;
-  background: var(--sidebar-bg);
+  background: linear-gradient(145deg, black, #5D009F);
   color: white;
   padding: 20px 0;
   display: flex;
@@ -478,7 +478,8 @@
   height: 100%;
   background: var(--progress-bg);
   border-radius: 3px;
-  transition: width 0.3s ease;
+  width: 0; /* Start at 0 width */
+  transition: width 0.5s ease; /* Smooth transition when width changes */
 }
 
 .match-percentage {
@@ -506,7 +507,17 @@
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 }
+@keyframes progressFill {
+  from { width: 0; }
+  to { width: var(--target-width); }
+}
 
+.progress-fill {
+  height: 100%;
+  background: var(--progress-bg);
+  border-radius: 3px;
+  animation: progressFill 0.8s ease-out forwards;
+}
 @media (max-width: 992px) {
   .dashboard-sidebar {
     width: 220px;

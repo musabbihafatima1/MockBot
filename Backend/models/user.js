@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     score: Number,
     date: { type: Date, default: Date.now }
   }],
+  
 });
 
 

@@ -1,120 +1,126 @@
-/*technical screen*/
+
 .body-tech {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #5D009F;
-    color: #FFFFFF;
-  }
-  
-  
-  .job-selection-container {
-    width: 90%;
-    max-width: 900px;
-    text-align: center;
-    margin-top: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 170px;
-  }
-  
-  /* Header */
-  .mock-header {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    padding: 10px 20px;
-    margin-left: -350px;
-    margin-top: -30px;
-  }
-  
+  font-family: Arial, sans-serif;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #5D009F;
+  color: #FFFFFF;
+}
+
+.job-selection-container {
+  width: 90%;
+  max-width: 900px;
+  text-align: center;
+  margin: 10px auto 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 0;
+}
+.subtitle{
+  margin-bottom: 15px;
+}
+
+
+
+
+
+.job-selection {
+  margin-top: 20px;
+  text-align: center;
+  margin-bottom: 70px;
+}
+
+.job-selection h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #000000;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+
+.job-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.job-option {
+  background-color: #FFFFFF;
+  color: #5D009F;
+  padding: 12px 25px;
+  border-radius: 30px; 
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #E0E0E0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.4;
+  min-width: 120px;
+}
+
+.job-option:hover {
+  background-color: #5D009F;
+  color: #FFFFFF;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(93, 0, 159, 0.2);
+}
+
+
+.job-option span {
+  display: inline-block;
+  margin: 0 2px;
+}
+
+
+@media (max-width: 768px) {
   .mock-logo h1 {
-    font-size: 28px; /* Increased font size */
-    font-weight: bold;
-    color: #5D009F;
-    background-color: #FFFFFF;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.4s ease-in-out;
+    font-size: 22px;
+    padding: 10px 20px;
   }
-  
-  .mock-logo h1:hover {
-    transform: scale(1.1) rotate(-3deg);
-    text-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
-  }
-  
-  /* Job Selection Section */
-  .job-selection {
-    margin-top: 20px;
-    text-align: center;
-    margin-bottom: 70px;
-  }
-  
+
   .job-selection h2 {
-    font-size: 32px; 
-    margin-bottom: 20px;
-    color: #000000;
-    font-weight: bold;
-    margin-top: 20px;
+    font-size: 24px;
+  }
+
+  .job-options {
+    gap: 10px;
+  }
+
+  .job-option {
+    padding: 10px 18px;
+    font-size: 13px;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-selection-container {
+    margin-left: 0;
+    width: 95%;
   }
   
   
   .job-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
+    grid-template-columns: 1fr;
   }
-  
   
   .job-option {
-    background-color: #FFFFFF;
-    color: #5D009F;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    border: 1px solid #E0E0E0;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 280px;
   }
-  
-  .job-option:hover {
-    background-color: #5D009F;
-    color: #FFFFFF;
-    transform: scale(1.05);
-  }
-  
-  .job-option.active {
-    background-color: #FFFFFF;
-    color: #5D009F;
-    border: 1px solid #E0E0E0;
-  }
-  
-  /* Responsive Styling */
-  @media (max-width: 768px) {
-    .mock-logo h1 {
-        font-size: 22px; 
-    }
-  
-    .job-selection h2 {
-        font-size: 24px; 
-    }
-  
-    .job-options {
-        gap: 8px;
-    }
-  
-    .job-option {
-        padding: 8px 15px;
-        font-size: 12px;
-    }
-  }
-
-  
+}

@@ -1,17 +1,29 @@
-// import React, { useState, useEffect } from 'react';
 
 
+// import React, { useState, useEffect, useCallback } from 'react';
 // import { useNavigate } from 'react-router-dom';
-// import './IQquiz.css';
+// import { motion } from 'framer-motion';
+// import Navbar from '../Components/Navbar';
+// import Baro from '../Components/baro';
+// import clickSound from '../Assets/click.mp3';
 
 // function Quiz({ questions }) {
+//   const [shuffledQuestions, setShuffledQuestions] = useState([]);
 //   const [currentQuestion, setCurrentQuestion] = useState(0);
 //   const [selectedAnswer, setSelectedAnswer] = useState(null);
-//   const [isFlipping, setIsFlipping] = useState(false);
 //   const [totalScore, setTotalScore] = useState(0);
 //   const [quizFinished, setQuizFinished] = useState(false);
+//   const [userAnswers, setUserAnswers] = useState([]);
 //   const [timer, setTimer] = useState(60);
 //   const navigate = useNavigate();
+
+//   const clickAudio = new Audio(clickSound);
+
+//   useEffect(() => {
+//     clickAudio.load();
+//     const shuffled = [...questions].sort(() => Math.random() - 0.5);
+//     setShuffledQuestions(shuffled);
+//   }, [questions]);
 
 //   useEffect(() => {
 //     if (!quizFinished && timer > 0) {
@@ -34,17 +46,16 @@
 //       });
 
 //       const data = await response.json();
-//       if (response.ok) {
-//         console.log(data.message);
-//       } else {
-//         console.error(data.message);
-//       }
+//       if (!response.ok) console.error(data.message);
 //     } catch (error) {
 //       console.error('Error saving score:', error);
 //     }
 //   };
 
-//   const handleAnswer = (option) => setSelectedAnswer(option);
+//   const handleAnswer = (option) => {
+//     clickAudio.play();
+//     setSelectedAnswer(option);
+//   };
 
 //   const getScore = (answer) => {
 //     const scoreMapping = {
@@ -60,97 +71,252 @@
 //   const handleNext = () => {
 //     if (selectedAnswer) {
 //       const score = getScore(selectedAnswer);
-//       setTotalScore((prevScore) => prevScore + score);
-//     }
-//     setIsFlipping(true);
-//     setTimeout(() => {
+//       setTotalScore((prev) => prev + score);
+//       setUserAnswers((prev) => [
+//         ...prev,
+//         {
+//           question: shuffledQuestions[currentQuestion].questionText,
+//           selected: selectedAnswer,
+//           options: shuffledQuestions[currentQuestion].options,
+//         },
+//       ]);
 //       setSelectedAnswer(null);
 //       setCurrentQuestion((prev) => prev + 1);
-//       setIsFlipping(false);
-//     }, 600);
+//     }
 //   };
 
-//   const handleSubmit = () => {
-//     if (selectedAnswer) {
-//       const score = getScore(selectedAnswer);
-//       setTotalScore((prevScore) => {
-//         const finalScore = prevScore + score;
+//   const handlePrevious = () => {
+//     setCurrentQuestion((prev) => prev - 1);
+//     const lastAnswer = userAnswers[currentQuestion - 1];
+//     setSelectedAnswer(lastAnswer?.selected || null);
+//   };
 
-//         saveScore(finalScore);
-//         return finalScore;
+//   const handleSubmit = useCallback(() => {
+//     if (!quizFinished) {
+//       let finalScore = totalScore;
+//       const updatedUserAnswers = [...userAnswers];
+      
+//       if (selectedAnswer) {
+//         const score = getScore(selectedAnswer);
+//         finalScore += score;
+//         updatedUserAnswers.push({
+//           question: shuffledQuestions[currentQuestion].questionText,
+//           selected: selectedAnswer,
+//           options: shuffledQuestions[currentQuestion].options,
+//         });
+//       }
+
+//       saveScore(finalScore);
+//       setQuizFinished(true);
+
+//       navigate('/scoreboard', {
+//         state: {
+//           correct: finalScore,
+//           totalQuestions: shuffledQuestions.length,
+//           userAnswers: updatedUserAnswers,
+//           quizType: 'eq',
+//         },
 //       });
 //     }
-//     setQuizFinished(true);
-//   };
+//   }, [quizFinished, totalScore, userAnswers, selectedAnswer, currentQuestion, shuffledQuestions, navigate]);
 
-//   const isLastQuestion = currentQuestion === questions.length - 1;
+//   // Prevent tab switching and submit on visibility change
+//   useEffect(() => {
+//     const handleVisibilityChange = () => {
+//       if (document.visibilityState === 'hidden' && !quizFinished) {
+//         handleSubmit();
+//       }
+//     };
 
-//   const getResult = () => {
-//     if (totalScore >= 130) return 'High Emotional Intelligence';
-//     if (totalScore >= 95) return 'Moderate Emotional Intelligence';
-//     return 'Low Emotional Intelligence';
-//   };
+//     const handleBeforeUnload = (e) => {
+//       if (!quizFinished) {
+//         e.preventDefault();
+//         handleSubmit();
+//         return '';
+//       }
+//     };
+
+//     document.addEventListener('visibilitychange', handleVisibilityChange);
+//     window.addEventListener('beforeunload', handleBeforeUnload);
+
+//     return () => {
+//       document.removeEventListener('visibilitychange', handleVisibilityChange);
+//       window.removeEventListener('beforeunload', handleBeforeUnload);
+//     };
+//   }, [handleSubmit, quizFinished]);
+
+//   const isLastQuestion = currentQuestion === shuffledQuestions.length - 1;
+//   const isFirstQuestion = currentQuestion === 0;
+
+//   if (shuffledQuestions.length === 0) return <div>Loading...</div>;
 
 //   return (
-//     <div className="eq-quiz-special">
-//       <button className="eq-back-arroww" onClick={() => navigate('/Userpage')}>
-//         ←
-//       </button>
+//     <div style={{
+//       fontFamily: 'Poppins, sans-serif',
+//       backgroundColor: 'white',
+//       minHeight: '100vh',
+//       display: 'flex',
+//       flexDirection: 'column'
+//     }}>
+//       <Navbar timer={timer}/>
+//       <div style={{
+//         display: 'flex',
+//         flex: 1,
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         padding: '10px'
+//       }}>
+//         <Baro
+//           questions={shuffledQuestions}
+//           currentQuestion={currentQuestion}
+//           setCurrentQuestion={setCurrentQuestion}
+//         />
 
-//       <div className={`eq-cardit ${isFlipping ? 'flip' : ''}`}>
-//         {!quizFinished ? (
-//           <>
-//             <div className="eq-timerdo">
-//               <p className="eq-quiz-timerr">Time Left: {timer}s</p>
-//             </div>
+//         <motion.div
+//           initial={{ opacity: 0, y: -50 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.5 }}
+//           style={{
+//             marginTop:'120px',
+//             marginLeft:'80px',
+//             width: '100%',
+//             maxWidth: '500px',
+//             borderRadius: '12px',
+//             backgroundColor: '#5D009F',
+//             padding: '20px',
+//             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.15)',
+//             display: 'flex',
+//             flexDirection: 'column',
+//             alignItems: 'center'
+//           }}
+//         >
+          
 
-//             <h2>Question {currentQuestion + 1}</h2>
-//             <p className="eq-questionred">{questions[currentQuestion].questionText}</p>
-//             <div className="eq-options">
-//               {questions[currentQuestion].options.map((option, index) => (
-//                 <button
-//                   key={index}
-//                   onClick={() => handleAnswer(option)}
-//                   className={`eq-option ${selectedAnswer === option ? 'selected' : ''}`}>
-//                   {option}
-//                 </button>
-//               ))}
-//             </div>
-//             {isLastQuestion ? (
-//               <button
-//                 className="eq-submit-btn"
-//                 onClick={handleSubmit}
-//                 disabled={!selectedAnswer}>
-//                 Submit
-//               </button>
-//             ) : (
-//               <button
-//                 className="eq-next-btn"
-//                 onClick={handleNext}
-//                 disabled={!selectedAnswer}>
-//                 Next Question
-//               </button>
-//             )}
-//           </>
-//         ) : (
-//           <div className="eq-score-display">
-//             <div className="eq-score-box">
-//               <h3>Quiz Completed!</h3>
-//               <p className="eq-total-scores">
-//                 Your Total Score: <strong>{totalScore}</strong> <br />
-//                 Status: <strong>{getResult()}</strong>
-//               </p>
-//             </div>
+//           <div style={{
+//             backgroundColor: '#2a2132',
+//             color: '#fff',
+//             padding: '15px',
+//             fontSize: '1.2rem',
+//             fontWeight: '600',
+//             borderRadius: '8px',
+//             textAlign: 'center',
+//             width: '100%',
+//             marginBottom: '20px',
+//             minHeight: '60px'
+//           }}>
+//             {shuffledQuestions[currentQuestion].questionText}
 //           </div>
-//         )}
+
+//           <div style={{
+//             width: '100%',
+//             display: 'flex',
+//             flexWrap: 'wrap',
+//             justifyContent: 'space-between',
+//             gap: '10px'
+//           }}>
+//             {shuffledQuestions[currentQuestion].options.map((option, index) => (
+//               <motion.div
+//                 key={index}
+//                 style={{
+//                   flex: '0 0 48%',
+//                   backgroundColor: selectedAnswer === option ? '#b399d4' : '#ffffff',
+//                   border: '1px solid #7A70ED',
+//                   padding: '10px 16px',
+//                   borderRadius: '12px',
+//                   textAlign: 'center',
+//                   color: selectedAnswer === option ? '#000' : '#333',
+//                   cursor: 'pointer',
+//                   fontSize: '0.95rem',
+//                   boxSizing: 'border-box'
+//                 }}
+//                 whileHover={{
+//                   scale: 1.02,
+//                   backgroundColor: '#e6e6e6'
+//                 }}
+//                 whileTap={{ scale: 0.98 }}
+//                 onClick={() => handleAnswer(option)}
+//               >
+//                 {option}
+//               </motion.div>
+//             ))}
+//           </div>
+
+//           <div style={{
+//             display: 'flex',
+//             justifyContent: 'space-between',
+//             width: '100%',
+//             marginTop: '20px'
+//           }}>
+//             <motion.button
+//               onClick={handlePrevious}
+//               disabled={isFirstQuestion}
+//               whileTap={{ scale: 0.9 }}
+//               style={{
+//                 padding: '10px 20px',
+//                 fontSize: '14px',
+//                 fontWeight: 'bold',
+//                 borderRadius: '5px',
+//                 backgroundColor: '#7A70ED',
+//                 color: 'white',
+//                 border: 'none',
+//                 cursor: isFirstQuestion ? 'not-allowed' : 'pointer',
+//                 opacity: isFirstQuestion ? 0.5 : 1,
+//                 width: '80px'
+//               }}
+//             >
+//               Prev
+//             </motion.button>
+
+//             {isLastQuestion ? (
+//               <motion.button
+//                 onClick={handleSubmit}
+//                 disabled={!selectedAnswer}
+//                 whileTap={{ scale: 0.9 }}
+//                 style={{
+//                   padding: '10px 20px',
+//                   fontSize: '14px',
+//                   fontWeight: 'bold',
+//                   borderRadius: '5px',
+//                   backgroundColor: '#7A70ED',
+//                   color: 'white',
+//                   border: 'none',
+//                   cursor: selectedAnswer ? 'pointer' : 'not-allowed',
+//                   opacity: selectedAnswer ? 1 : 0.5,
+//                   width: '100px'
+//                 }}
+//               >
+//                 Submit
+//               </motion.button>
+//             ) : (
+//               <motion.button
+//                 onClick={handleNext}
+//                 disabled={!selectedAnswer}
+//                 whileTap={{ scale: 0.9 }}
+//                 style={{
+//                   padding: '10px 20px',
+//                   fontSize: '14px',
+//                   fontWeight: 'bold',
+//                   borderRadius: '5px',
+//                   backgroundColor: '#7A70ED',
+//                   color: 'white',
+//                   border: 'none',
+//                   cursor: selectedAnswer ? 'pointer' : 'not-allowed',
+//                   opacity: selectedAnswer ? 1 : 0.5,
+//                   width: '80px'
+//                 }}
+//               >
+//                 Next
+//               </motion.button>
+//             )}
+//           </div>
+//         </motion.div>
 //       </div>
 //     </div>
 //   );
 // }
 
 // export default Quiz;
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '../Components/Navbar';
@@ -241,22 +407,22 @@ function Quiz({ questions }) {
     setSelectedAnswer(lastAnswer?.selected || null);
   };
 
-  const handleSubmit = () => {
-    if (selectedAnswer) {
-      const score = getScore(selectedAnswer);
-      const finalScore = totalScore + score;
-
-      saveScore(finalScore);
-      const updatedUserAnswers = [
-        ...userAnswers,
-        {
+  const handleSubmit = useCallback(() => {
+    if (!quizFinished) {
+      let finalScore = totalScore;
+      const updatedUserAnswers = [...userAnswers];
+      
+      if (selectedAnswer) {
+        const score = getScore(selectedAnswer);
+        finalScore += score;
+        updatedUserAnswers.push({
           question: shuffledQuestions[currentQuestion].questionText,
           selected: selectedAnswer,
           options: shuffledQuestions[currentQuestion].options,
-        },
-      ];
+        });
+      }
 
-      setUserAnswers(updatedUserAnswers);
+      saveScore(finalScore);
       setQuizFinished(true);
 
       navigate('/scoreboard', {
@@ -268,7 +434,32 @@ function Quiz({ questions }) {
         },
       });
     }
-  };
+  }, [quizFinished, totalScore, userAnswers, selectedAnswer, currentQuestion, shuffledQuestions, navigate]);
+
+  // Prevent tab switching and submit on visibility change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && !quizFinished) {
+        handleSubmit();
+      }
+    };
+
+    const handleBeforeUnload = (e) => {
+      if (!quizFinished) {
+        e.preventDefault();
+        handleSubmit();
+        return '';
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [handleSubmit, quizFinished]);
 
   const isLastQuestion = currentQuestion === shuffledQuestions.length - 1;
   const isFirstQuestion = currentQuestion === 0;
@@ -276,21 +467,9 @@ function Quiz({ questions }) {
   if (shuffledQuestions.length === 0) return <div>Loading...</div>;
 
   return (
-    <div style={{
-      fontFamily: 'Poppins, sans-serif',
-      backgroundColor: 'white',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      <Navbar />
-      <div style={{
-        display: 'flex',
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '10px'
-      }}>
+    <div className="quiz-container">
+      <Navbar timer={timer}/>
+      <div className="quiz-content">
         <Baro
           questions={shuffledQuestions}
           currentQuestion={currentQuestion}
@@ -298,150 +477,54 @@ function Quiz({ questions }) {
         />
 
         <motion.div
+          className="quiz-card"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          style={{
-            marginTop:'120px',
-            marginLeft:'80px',
-            width: '100%',
-            maxWidth: '500px',
-            borderRadius: '12px',
-            backgroundColor: '#5D009F',
-            padding: '20px',
-            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.15)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}
         >
-          <div style={{
-            backgroundColor: '#212832',
-            color: 'yellow',
-            fontSize: '1.1rem',
-            padding: '10px',
-            borderRadius: '50px 50px 0 0',
-            width: '80px',
-            textAlign: 'center',
-            marginBottom: '-5px'
-          }}>
-            {timer}s
-          </div>
-
-          <div style={{
-            backgroundColor: '#2a2132',
-            color: '#fff',
-            padding: '15px',
-            fontSize: '1.2rem',
-            fontWeight: '600',
-            borderRadius: '8px',
-            textAlign: 'center',
-            width: '100%',
-            marginBottom: '20px',
-            minHeight: '60px'
-          }}>
+          <div className="question">
             {shuffledQuestions[currentQuestion].questionText}
           </div>
 
-          {/* Options in two columns */}
-          <div style={{
-            width: '100%',
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            gap: '10px'
-          }}>
+          <div className="options">
             {shuffledQuestions[currentQuestion].options.map((option, index) => (
               <motion.div
                 key={index}
-                style={{
-                  flex: '0 0 48%',
-                  backgroundColor: selectedAnswer === option ? '#b399d4' : '#ffffff',
-                  border: '1px solid #7A70ED',
-                  padding: '10px 16px',
-                  borderRadius: '12px',
-                  textAlign: 'center',
-                  color: selectedAnswer === option ? '#000' : '#333',
-                  cursor: 'pointer',
-                  fontSize: '0.95rem',
-                  boxSizing: 'border-box'
-                }}
-                whileHover={{
-                  scale: 1.02,
-                  backgroundColor: '#e6e6e6'
-                }}
-                whileTap={{ scale: 0.98 }}
+                className={`option ${selectedAnswer === option ? 'selected' : ''}`}
                 onClick={() => handleAnswer(option)}
+                whileHover={{ scale: 1.02 }}
               >
                 {option}
               </motion.div>
             ))}
           </div>
 
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            width: '100%',
-            marginTop: 'auto',
-            marginTop: '20px'
-          }}>
+          <div className="navigation">
             <motion.button
+              className="nav-btn"
               onClick={handlePrevious}
               disabled={isFirstQuestion}
               whileTap={{ scale: 0.9 }}
-              style={{
-                padding: '10px 20px',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                borderRadius: '5px',
-                backgroundColor: '#7A70ED',
-                color: 'white',
-                border: 'none',
-                cursor: isFirstQuestion ? 'not-allowed' : 'pointer',
-                opacity: isFirstQuestion ? 0.5 : 1,
-                width: '80px'
-              }}
             >
               Prev
             </motion.button>
 
             {isLastQuestion ? (
               <motion.button
+                className="nav-btn submit-btn"
                 onClick={handleSubmit}
                 disabled={!selectedAnswer}
                 whileTap={{ scale: 0.9 }}
-                style={{
-                  padding: '10px 20px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  borderRadius: '5px',
-                  backgroundColor: '#7A70ED',
-                  color: 'white',
-                  border: 'none',
-                  cursor: selectedAnswer ? 'pointer' : 'not-allowed',
-                  opacity: selectedAnswer ? 1 : 0.5,
-                  width: '100px'
-                }}
+                whileHover={{ scale: 1.05 }}
               >
                 Submit
               </motion.button>
             ) : (
               <motion.button
+                className="nav-btn"
                 onClick={handleNext}
                 disabled={!selectedAnswer}
                 whileTap={{ scale: 0.9 }}
-                style={{
-                  padding: '10px 20px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  borderRadius: '5px',
-                  backgroundColor: '#7A70ED',
-                  color: 'white',
-                  border: 'none',
-                  cursor: selectedAnswer ? 'pointer' : 'not-allowed',
-                  opacity: selectedAnswer ? 1 : 0.5,
-                  width: '80px'
-                }}
               >
                 Next
               </motion.button>
@@ -449,6 +532,161 @@ function Quiz({ questions }) {
           </div>
         </motion.div>
       </div>
+
+      <style jsx>{`
+        .quiz-container {
+          background-color: #ece8ee;
+          min-height: 100vh;
+          display: flex;
+          margin-top:10px;
+          flex-direction: column;
+          align-items: center;
+          overflow-x: hidden;
+          position: relative;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        .quiz-content {
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          width: 100%;
+          padding-top: 85px;
+          padding-left: 90px;
+          position: relative;
+          gap: 20px;
+        }
+
+        .quiz-card {
+          width: 100%;
+          max-width: 550px;
+          background-color: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          padding: 25px;
+          margin-left: 100px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          min-height: 380px;
+        }
+
+        .question {
+          margin-top: 5px;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #333;
+          text-align: center;
+          margin-bottom: 20px;
+          padding: 0 10px;
+          word-break: break-word;
+        }
+
+        .options {
+          width: 100%;
+          margin-top: 10px;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+
+        .option {
+          background-color: #f0f0f0;
+          
+          border-radius: 12px;
+          color: #333;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background 0.3s;
+          min-height: 60px;
+          text-align: center;
+          font-size: 0.95rem;
+        }
+
+        .option:hover {
+          background-color: #d6c8f7;
+        }
+
+        .option.selected {
+          background-color: #d6c8f7;
+          color: #000;
+          font-weight: bold;
+        }
+
+        .navigation {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          margin-top: 20px;
+        }
+
+        .nav-btn {
+          background: #7A70ED;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: background 0.3s;
+        }
+
+        .nav-btn:hover {
+          background: #5D009F;
+        }
+
+        .nav-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .submit-btn {
+          background: #4CAF50;
+        }
+
+        .submit-btn:hover {
+          background: #3e8e41;
+        }
+
+        @media (max-width: 768px) {
+          .quiz-content {
+            padding-left: 0;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .quiz-card {
+            max-width: 90%;
+            margin-left: 0;
+            margin-top: 20px;
+          }
+
+          .options {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .quiz-card {
+            max-width: 95%;
+            min-height: 340px;
+            padding: 18px;
+          }
+
+          .question {
+            font-size: 1rem;
+          }
+
+          .option {
+            font-size: 0.85rem;
+            padding: 8px 14px;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -2,9 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import "./Navbar.css";
-import logo from "../Assets/mb.png"; // Ensure correct path
+import logo from "../Assets/mb.png";
 
-const Navbar = () => {
+const Navbar = ({ timer }) => {
+
   return (
     <motion.nav
       className="navbar"
@@ -19,6 +20,16 @@ const Navbar = () => {
           <Link to="/about">About Us</Link>
         </div>
       </div>
+      
+      {timer !== undefined && (
+        
+          <div className="timer">
+            
+            <span>Time:</span>
+            <span className="timer-value">{timer}s</span>
+         
+        </div>
+      )}
     </motion.nav>
   );
 };

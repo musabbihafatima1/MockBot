@@ -1,50 +1,51 @@
-/* Navbar Styles */
 .navbar {
     width: 100%;
-    height: 60px;
-    background-color: #450074;
-    color: white;
+    height: 70px;
+    background-color: #ffffff;
     display: flex;
     align-items: center;
+    justify-content: space-between; /* Pushes left-section and timer to opposite sides */
     padding: 0 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Left section containing logo and links */
-.left-section {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .left-section {
     display: flex;
     align-items: center;
-    gap: 20px; /* Space between logo and links */
-}
-
-/* Logo */
-.logo {
-    margin-bottom: 10px;
-    width: 40px;  /* Adjust size as needed */
-    height: 40px;
-    margin-top:10px
-}
-
-/* Navigation Links */
-.nav-links {
-    display: flex;
-    gap: 15px;
-}
-
-/* Style the links */
-.nav-links a {
+  }
+  
+  .logo {
+    width: 50px;
+    height: auto;
+    margin-right: 20px;
+  }
+  
+  .nav-links a {
+    margin-right: 20px;
     text-decoration: none;
-    color: rgb(240, 238, 238);
-    font-size:0px; /* Reduced font size */
-    font-weight: 300; /* Adjusted weight for a lighter look */
-    transition: color 0.3s ease-in-out;
-}
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .nav-links a:hover {
+    color: #007bff;
+  }
+  
+  /* Timer Styles */
+  .timer {
+    
+   margin-right: 520px;
+    background: white;
+    color: black;
+    padding: 6px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  
 
-.nav-links a:hover {
-    color: #ffd700;
-    transform: scale(1.05);
-}
+  
+  .timer span {
+    margin: 0 5px;
+  }
+  

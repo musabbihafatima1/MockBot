@@ -5,222 +5,6 @@ const axios = require('axios');
 const User = require('../models/user.js');
 const router = express.Router();
 
-// Sending mail to University when user completes test and gain scores 
-const nodemailer = require('nodemailer');
-const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const path = require('path'); 
-
-// Configure Nodemailer transport
-/*const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'maryammomomalik@gmail.com', // Your email
-    pass: 'nwju akgp roiu inek' // Your app password
-  }
-});
-
-// Helper function to get attempt label (e.g., "First Attempt", "Second Attempt", etc.)
-const getAttemptLabel = (attemptNumber) => {
-  const attemptLabels = ['First Attempt', 'Second Attempt', 'Third Attempt', 'Fourth Attempt', 'Fifth Attempt'];
-  return attemptLabels[attemptNumber - 1] || `${attemptNumber}th Attempt`;
-};
-
-// Function to generate PDF
-const generatePdf = (user) => {
-  const doc = new PDFDocument();
-  const pdfPath = path.join(__dirname, 'scores.pdf');
-  doc.pipe(fs.createWriteStream(pdfPath));
-
-  // Add content to the PDF
-  doc.fontSize(25).text('Test Scores', { underline: true });
-  doc.moveDown();
-  doc.fontSize(18).text(`Username: ${user.username}`);
-  doc.fontSize(18).text(`University: ${user.university}`);
-  doc.moveDown();
-
-  // Add IQ Scores with attempt numbers and maximum score
-  doc.fontSize(16).text('IQ Scores (Out of 12):');
-  user.iqScores.forEach((score, index) => {
-    const attemptNumber = index + 1;
-    const attemptLabel = getAttemptLabel(attemptNumber);
-    doc.text(`  ${attemptLabel}: ${score.score}/12`);
-  });
-  doc.moveDown();
-
-  // Add EQ Scores with attempt numbers and maximum score
-  doc.fontSize(16).text('EQ Scores (Out of 132):');
-  user.eqScores.forEach((score, index) => {
-    const attemptNumber = index + 1;
-    const attemptLabel = getAttemptLabel(attemptNumber);
-    doc.text(`  ${attemptLabel}: ${score.score}/132`);
-  });
-
-  doc.end();
-  return pdfPath;
-};
-
-// Save IQ Score
-router.post('/saveIqscore', async (req, res) => {
-  const { score } = req.body;
-
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Authorization token is missing or invalid' });
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const numericScore = parseFloat(score);
-    if (isNaN(numericScore) || numericScore < 0 || numericScore > 12) {
-      return res.status(400).json({ message: 'Invalid IQ score. Must be between 0 and 12.' });
-    }
-
-    if (!user.iqScores) {
-      user.iqScores = [];
-    }
-
-    user.iqScores.push({ score: numericScore });
-    await user.save();
-
-    console.log("Updated iqScores: ", user.iqScores);
-
-    // Check if both IQ and EQ scores are available
-    if (user.iqScores.length > 0 && user.eqScores && user.eqScores.length > 0) {
-      const pdfPath = generatePdf(user);
-
-      const emailContent = `
-        Dear University,
-
-        Please find the attached PDF containing the scores of ${user.username} from ${user.university}.
-
-        Best regards,
-        Test Preparation System
-      `;
-
-      const mailOptions = {
-        from: 'maryammomomalik@gmail.com',
-        to: 'hamnaaman3@gmail.com',
-        subject: `Scores for ${user.username}`,
-        text: emailContent,
-        attachments: [
-          {
-            filename: 'scores.pdf',
-            path: pdfPath
-          }
-        ]
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error occurred while sending email:', error);
-          return res.status(500).json({ message: 'Failed to send email' });
-        }
-        console.log('Email sent successfully:', info.response);
-        res.json({ message: 'IQ Score saved successfully and email sent with PDF' });
-      });
-    } else {
-      res.json({ message: 'IQ Score saved successfully. Waiting for EQ scores to send email.' });
-    }
-
-  } catch (error) {
-    console.error('Error saving score:', error);
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-    res.status(500).json({ message: 'Error saving score' });
-  }
-});
-
-// Save EQ Score
-router.post('/saveEqscore', async (req, res) => {
-  const { score } = req.body;
-
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Authorization token is missing or invalid' });
-  }
-
-  const token = authHeader.split(' ')[1];
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const numericScore = parseFloat(score);
-    if (isNaN(numericScore) || numericScore < 0 || numericScore > 132) {
-      return res.status(400).json({ message: 'Invalid EQ score. Must be between 0 and 132.' });
-    }
-
-    if (!user.eqScores) {
-      user.eqScores = [];
-    }
-
-    user.eqScores.push({ score: numericScore });
-    await user.save();
-
-    console.log("Updated eqScores: ", user.eqScores);
-
-    // Check if both IQ and EQ scores are available
-    if (user.iqScores && user.iqScores.length > 0 && user.eqScores.length > 0) {
-      const pdfPath = generatePdf(user);
-
-      const emailContent = `
-        Dear University,
-
-        Please find the attached PDF containing the scores of ${user.username} from ${user.university}.
-
-        Best regards,
-        Test Preparation System
-      `;
-
-      const mailOptions = {
-        from: 'maryammomomalik@gmail.com',
-        to: 'hamnaaman3@gmail.com',
-        subject: `Scores for ${user.username}`,
-        text: emailContent,
-        attachments: [
-          {
-            filename: 'scores.pdf',
-            path: pdfPath
-          }
-        ]
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error occurred while sending email:', error);
-          return res.status(500).json({ message: 'Failed to send email' });
-        }
-        console.log('Email sent successfully:', info.response);
-        res.json({ message: 'EQ Score saved successfully and email sent with PDF' });
-      });
-    } else {
-      res.json({ message: 'EQ Score saved successfully. Waiting for IQ scores to send email.' });
-    }
-
-  } catch (error) {
-    console.error('Error saving score:', error);
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-    res.status(500).json({ message: 'Error saving score' });
-  }
-});*/
-
-//code end for university mailing.
 
 // Signup Route
 router.post('/signup', async (req, res) => {
@@ -238,7 +22,7 @@ router.post('/signup', async (req, res) => {
     await user.save();
 
     // Generate JWT Token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '4h' });
 
     return res.status(201).json({ message: 'User created successfully', token });
   } catch (error) {
@@ -265,7 +49,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate JWT Token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '4h' });
 
     return res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
@@ -274,17 +58,34 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// const authMiddleware = (req, res, next) => {
+//   const token = req.headers.authorization;
+//   if (!token) {
+//     return res.status(401).json({ message: 'Authorization token is missing' });
+//   }
+
+//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+//     if (err) {
+//       return res.status(401).json({ message: 'Invalid token' });
+//     }
+//     req.user = decoded;
+//     next();
+//   });
+// };
 const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization;
-  if (!token) {
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Authorization token is missing' });
   }
+
+  const token = authHeader.split(' ')[1];
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).json({ message: 'Invalid token' });
     }
-    req.user = decoded;
+    req.user = { userId: decoded.userId }; // Standardize to userId
     next();
   });
 };
@@ -486,43 +287,7 @@ router.get('/profilename', async (req, res) => {
   }
 });
 
-// Get User Scores (EQ and IQ)
-router.get('/scores', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    return res.status(401).json({ message: 'Authentication token missing' });
-  }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Calculate latest EQ score percentage (out of 132)
-    const eqPercentage = user.eqScores && user.eqScores.length > 0 
-      ? Math.round((user.eqScores[user.eqScores.length - 1].score / 132) * 100)
-      : 0;
-
-    // Calculate latest IQ score percentage (out of 12)
-    const iqPercentage = user.iqScores && user.iqScores.length > 0 
-      ? Math.round((user.iqScores[user.iqScores.length - 1].score / 12) * 100)
-      : 0;
-
-    res.json({
-      eqScore: eqPercentage,
-      iqScore: iqPercentage,
-      hasEq: user.eqScores && user.eqScores.length > 0,
-      hasIq: user.iqScores && user.iqScores.length > 0
-    });
-
-  } catch (error) {
-    console.error('Error fetching scores:', error);
-    res.status(500).json({ message: 'Error fetching scores' });
-  }
-});
 
 // Save Technical Score
 router.post('/saveTechnicalScore', async (req, res) => {
@@ -565,7 +330,9 @@ router.post('/saveTechnicalScore', async (req, res) => {
   }
 });
 
-// Get All Scores
+
+
+//gets all three scores 
 router.get('/scores', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
@@ -580,30 +347,75 @@ router.get('/scores', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // Get the most recent scores
+    const latestEq = user.eqScores?.length > 0 
+      ? user.eqScores[user.eqScores.length - 1].score 
+      : 0;
+    const latestIq = user.iqScores?.length > 0 
+      ? user.iqScores[user.iqScores.length - 1].score 
+      : 0;
+    const latestTechnical = user.technicalScores?.length > 0
+      ? user.technicalScores[user.technicalScores.length - 1].score
+      : 0;
+
     // Calculate percentages
-    const iqPercentage = user.iqScores?.length > 0 
-      ? Math.round((user.iqScores[user.iqScores.length - 1].score / 12) * 100)
-      : 0;
-
-    const eqPercentage = user.eqScores?.length > 0 
-      ? Math.round((user.eqScores[user.eqScores.length - 1].score / 132) * 100)
-      : 0;
-
-    const technicalPercentage = user.technicalScores?.length > 0
-      ? Math.round((user.technicalScores[user.technicalScores.length - 1].score / 50) * 100)
-      : 0;
+    const eqPercentage = Math.round((latestEq / 132) * 100);
+    const iqPercentage = Math.round((latestIq / 12) * 100);
+    const technicalPercentage = Math.round((latestTechnical / 50) * 100);
 
     res.json({
-      iq: iqPercentage,
-      eq: eqPercentage,
-      technical: technicalPercentage,
-      hasIq: user.iqScores?.length > 0,
+      eqScore: eqPercentage,
+      iqScore: iqPercentage,
+      technicalScore: technicalPercentage,
       hasEq: user.eqScores?.length > 0,
+      hasIq: user.iqScores?.length > 0,
       hasTechnical: user.technicalScores?.length > 0
     });
+
   } catch (error) {
     console.error('Error fetching scores:', error);
     res.status(500).json({ message: 'Error fetching scores' });
+  }
+});
+
+
+router.post('/savetechnicalfield', authMiddleware, async (req, res) => { // Added authMiddleware
+  try {
+    const { technicalField } = req.body;
+
+    if (!technicalField) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Technical field is required' 
+      });
+    }
+
+    // Update user's technical field using userId from auth middleware
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.userId, // Changed to userId from decoded token
+      { technicalField },
+      { new: true, runValidators: true } // Added validation
+    ).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'User not found' 
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Technical field updated successfully',
+      user: updatedUser
+    });
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
   }
 });
 

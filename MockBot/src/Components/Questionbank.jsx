@@ -1,22 +1,29 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Questionbank.css";
 
 const Questionvault = () => {
   const [questions, setQuestions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isVisible, setIsVisible] = useState(false);
   const questionsPerPage = 10;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetch EQ questions from backend
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/eq-questions"); // Replace with your API endpoint
+        const response = await axios.get("http://localhost:5000/api/eq-questions");
         setQuestions(response.data);
       } catch (error) {
         console.error("Error fetching EQ questions:", error);
@@ -33,7 +40,7 @@ const Questionvault = () => {
       q.questionText.toLowerCase().includes(e.target.value.toLowerCase())
     );
     setQuestions(filteredQuestions);
-    setCurrentPage(1); // Reset to the first page on new search
+    setCurrentPage(1);
   };
 
   // Pagination logic
@@ -47,10 +54,49 @@ const Questionvault = () => {
 
   return (
     <div className="question-bank-container">
-      {/* Back Arrow */}
-      <div className="navigation-panel">
-        <button className="navigation-back-button" onClick={() => navigate(-1)}>
-          &#8592; 
+      {/* Sliding Back Button */}
+      <div style={{
+        position: 'fixed',
+        left: isVisible ? '0' : '-200px',
+        top: '20px',
+        transition: 'left 0.5s ease-out',
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center'
+      }}>
+        <button 
+          onClick={() => navigate(-1)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+            backgroundColor: '#5D009F',
+            color: 'white',
+            padding: '10px 15px 10px 10px',
+            borderRadius: '0 25px 25px 0',
+            border: 'none',
+            boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.2)',
+            transition: 'all 0.3s ease',
+            cursor: 'pointer',
+            ':hover': {
+              backgroundColor: '#7F4AC2',
+              paddingRight: '20px'
+            }
+          }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ 
+            marginRight: '8px',
+            flexShrink: 0
+          }}>
+            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span style={{
+            whiteSpace: 'nowrap',
+            fontWeight: '600',
+            fontSize: '14px'
+          }}>
+            Return to Dashboard
+          </span>
         </button>
       </div>
 
@@ -58,7 +104,7 @@ const Questionvault = () => {
 
       {/* Search Bar */}
       <div className="search-bar">
-        <FaSearch className="search-icon" />
+        <FaSearch className="" />
         <input
           type="text"
           placeholder="Search Your Questions"
@@ -75,7 +121,7 @@ const Questionvault = () => {
             <div className="question-meta">
               <span className="category">Emotional Quotient</span>
               <div className="difficulty-icons">
-                <span className="difficulty">N/A</span> {/* Add difficulty if needed */}
+                <span className="difficulty">N/A</span>
               </div>
             </div>
           </div>

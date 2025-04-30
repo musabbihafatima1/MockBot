@@ -23,7 +23,6 @@ import Scoreboard from './Pages/Scoreboard';
 import Admindashboard from './Pages/Admin/Admindashboard';
 import Registeredcompanies from './Pages/Admin/RegisteredCompanies';
 import AdminLogin from './Pages/Admin/AdminLogin';
-import AI from './Pages/AI/Practice';
 import Review from './Pages/Review';
 
 function App() {
@@ -57,7 +56,7 @@ function App() {
           <Route path="/adminlogin" element={<AdminLogin />} />
           <Route path="/admin" element={<Admindashboard />} />
         <Route path="/registered-companies" element={<Registeredcompanies />} />
-        <Route path="/practice" element={<AI />} />
+        
         <Route path ='/review' element={<Review/>}/>
         </Routes>
       </Router>
