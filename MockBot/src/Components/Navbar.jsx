@@ -6,6 +6,12 @@ import logo from "../Assets/mb.png";
 
 const Navbar = ({ timer }) => {
 
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <motion.nav
       className="navbar"
@@ -26,7 +32,7 @@ const Navbar = ({ timer }) => {
           <div className="timer">
             
             <span>Time:</span>
-            <span className="timer-value">{timer}s</span>
+            <span className="timer-value">{formatTime(timer)}</span>
          
         </div>
       )}

@@ -321,7 +321,7 @@ const Scoreboard = () => {
           >
             Review Answers
           </button>
-          <button onClick={() => navigate(getQuizRoute())}>Play Again</button>
+          
         </div>
       </div>
     </>

@@ -134,7 +134,7 @@
    
     display: flex;
     justify-content: center; 
-    width: 200px;
+    width: 150px;
     background-color: #5D009F;
     color: #ffffff;
     padding: 10px;
@@ -169,3 +169,35 @@
     color: #555555;
     margin-top: 5px;
 }
+
+/* Error messages */
+.error-message {
+    color: #ff4444;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block;
+    height: 20px;
+  }
+  
+  /* Success message */
+  .success-message {
+    color: #00C851;
+    font-size: 0.9rem;
+    margin-left: 15px;
+    animation: fadeOut 3s forwards;
+    animation-delay: 2s;
+  }
+  
+  /* Form actions */
+  .form-actions {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  
+  

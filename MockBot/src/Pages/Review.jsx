@@ -7,16 +7,7 @@ const Review = () => {
   const { userAnswers = [], quizType = "iq", correct = 0, totalQuestions = 0 } = location.state || {};
 
   const goBackToQuiz = () => {
-    switch (quizType) {
-      case "eq":
-        navigate("/eqquiz");
-        break;
-      case "technical":
-        navigate("/technicalmcqs");
-        break;
-      default:
-        navigate("/iqquiz");
-    }
+    navigate(-1);
   };
 
   const renderEQReview = () => {
@@ -162,7 +153,7 @@ const Review = () => {
             onMouseOver={(e) => (e.target.style.backgroundColor = "#48017a")}
             onMouseOut={(e) => (e.target.style.backgroundColor = "#5D009F")}
           >
-            Try Again
+            Back
           </button>
         </div>
       </div>

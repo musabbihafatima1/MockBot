@@ -13,7 +13,7 @@ function Quiz({ questions }) {
   const [totalScore, setTotalScore] = useState(0);
   const [quizFinished, setQuizFinished] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(600);
   const navigate = useNavigate();
 
   const clickAudio = new Audio(clickSound);
@@ -76,8 +76,6 @@ function Quiz({ questions }) {
         },
         body: JSON.stringify({ score }),
       });
-      const data = await response.json();
-      alert(data.message);
     } catch (error) {
       console.error("Error saving score:", error);
     }

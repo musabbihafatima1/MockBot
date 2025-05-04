@@ -11,17 +11,17 @@ router.post('/signup', async (req, res) => {
   const { username, email, password, university } = req.body;
 
   try {
-    // Check if user already exists
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create a new user
+
     const user = new User({ username, email, password, university });
     await user.save();
 
-    // Generate JWT Token
+    // Generating JWT Token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '4h' });
 
     return res.status(201).json({ message: 'User created successfully', token });
@@ -36,19 +36,19 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find user by email
+    
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Check if the password matches
+    
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT Token
+    
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '4h' });
 
     return res.status(200).json({ message: 'Login successful', token });
@@ -58,20 +58,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// const authMiddleware = (req, res, next) => {
-//   const token = req.headers.authorization;
-//   if (!token) {
-//     return res.status(401).json({ message: 'Authorization token is missing' });
-//   }
-
-//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-//     if (err) {
-//       return res.status(401).json({ message: 'Invalid token' });
-//     }
-//     req.user = decoded;
-//     next();
-//   });
-// };
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   
@@ -91,117 +77,7 @@ const authMiddleware = (req, res, next) => {
 };
 
 
-// Route to save EQ score
-router.post('/saveEqscore', async (req, res) => {
-  const { score } = req.body;
-
-  // Assuming the token is passed as a Bearer token
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Authorization token is missing or invalid' });
-  }
-
-  const token = authHeader.split(' ')[1];  // Extract the token part after 'Bearer'
-
-  try {
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Find the user by ID
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Ensure the score is a number before pushing
-    const numericScore = parseFloat(score);  // Convert the score to a number
-
-    if (isNaN(numericScore)) {
-      return res.status(400).json({ message: 'Invalid score format' });
-    }
-
-    // Initialize eqScores if it doesn't exist
-    if (!user.eqScores) {
-      user.eqScores = [];
-    }
-
-    // Push the numeric score to the eqScores array
-    user.eqScores.push({ score: numericScore });
-
-    await user.save(); // Save the updated user document
-
-    console.log("Updated eqScores: ", user.eqScores);  // Debug: log the updated scores
-    res.json({ message: 'Score saved successfully' });
-  } catch (error) {
-    console.error('Error saving score:', error);
-
-    // Differentiate between different types of errors
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-
-    res.status(500).json({ message: 'Error saving score' });
-  }
-});
-
-router.post('/saveIqscore', async (req, res) => {
-  const { score } = req.body;
-
-  // Assuming the token is passed as a Bearer token
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Authorization token is missing or invalid' });
-  }
-
-  const token = authHeader.split(' ')[1];  // Extract the token part after 'Bearer'
-
-  try {
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Find the user by ID
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Ensure the score is a number before pushing
-    const numericScore = parseFloat(score);  // Convert the score to a number
-
-    if (isNaN(numericScore)) {
-      return res.status(400).json({ message: 'Invalid score format' });
-    }
-
-    // Initialize eqScores if it doesn't exist
-    if (!user.iqScores) {
-      user.iqScores = [];
-    }
-
-    // Push the numeric score to the eqScores array
-    user.iqScores.push({ score: numericScore });
-
-    await user.save(); // Save the updated user document
-
-    console.log("Updated eqScores: ", user.iqScores);  // Debug: log the updated scores
-    res.json({ message: 'Score saved successfully' });
-  } catch (error) {
-    console.error('Error saving score:', error);
-
-    // Differentiate between different types of errors
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-
-    res.status(500).json({ message: 'Error saving score' });
-  }
-});
-
-
-// Fetch user profile
+//get data for profile
 router.get('/profile', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1]; // Extract token from header
   if (!token) {
@@ -289,48 +165,260 @@ router.get('/profilename', async (req, res) => {
 
 
 
-// Save Technical Score
-router.post('/saveTechnicalScore', async (req, res) => {
-  const { score } = req.body;
+// // Route to save EQ score
+// router.post('/saveEqscore', async (req, res) => {
+//   const { score } = req.body;
 
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Authorization token is missing or invalid' });
-  }
+//   // Assuming the token is passed as a Bearer token
+//   const authHeader = req.headers.authorization;
 
-  const token = authHeader.split(' ')[1];
+//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//     return res.status(401).json({ message: 'Authorization token is missing or invalid' });
+//   }
 
+//   const token = authHeader.split(' ')[1];  // Extract the token part after 'Bearer'
+
+//   try {
+//     // Verify the token
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     // Find the user by ID
+//     const user = await User.findById(decoded.userId);
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     // Ensure the score is a number before pushing
+//     const numericScore = parseFloat(score);  // Convert the score to a number
+
+//     if (isNaN(numericScore)) {
+//       return res.status(400).json({ message: 'Invalid score format' });
+//     }
+
+//     // Initialize eqScores if it doesn't exist
+//     if (!user.eqScores) {
+//       user.eqScores = [];
+//     }
+
+//     // Push the numeric score to the eqScores array
+//     user.eqScores.push({ score: numericScore });
+
+//     await user.save(); // Save the updated user document
+
+//     console.log("Updated eqScores: ", user.eqScores);  // Debug: log the updated scores
+//     res.json({ message: 'Score saved successfully' });
+//   } catch (error) {
+//     console.error('Error saving score:', error);
+
+//     // Differentiate between different types of errors
+//     if (error.name === 'JsonWebTokenError') {
+//       return res.status(401).json({ message: 'Invalid token' });
+//     }
+
+//     res.status(500).json({ message: 'Error saving score' });
+//   }
+// });
+
+
+
+//save eqscores with the check
+router.post('/saveEqscore', authMiddleware, async (req, res) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    // Strict time validation
+    const sixMonthsMillis = 6 * 30 * 24 * 60 * 60 * 1000; // Exact 6 months
+    if (user.lastEQAttempt && (Date.now() - user.lastEQAttempt.getTime()) < sixMonthsMillis) {
+      return res.status(429).json({ 
+        message: 'EQ quiz can only be attempted once every 6 months' 
+      });
     }
 
-    const numericScore = parseFloat(score);
-    if (isNaN(numericScore) || numericScore < 0 || numericScore > 50) {
-      return res.status(400).json({ message: 'Invalid Technical score. Must be between 0 and 50.' });
+    // Validate score
+    const numericScore = parseFloat(req.body.score);
+    if (isNaN(numericScore) || numericScore < 0 || numericScore > 132) {
+      return res.status(400).json({ message: 'Invalid EQ score' });
     }
 
-    if (!user.technicalScores) {
-      user.technicalScores = [];
-    }
+    // Save with proper atomic operation
+    await User.findByIdAndUpdate(req.user.userId, {
+      $push: { eqScores: { score: numericScore } },
+      $set: { lastEQAttempt: new Date() }
+    });
 
-    user.technicalScores.push({ score: numericScore });
-    await user.save();
-
-    res.json({ message: 'Technical Score saved successfully' });
+    res.json({ message: 'EQ score saved successfully' });
   } catch (error) {
-    console.error('Error saving score:', error);
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-    res.status(500).json({ message: 'Error saving score' });
+    console.error('Error saving EQ score:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
 
+
+// router.post('/saveIqscore', async (req, res) => {
+//   const { score } = req.body;
+
+//   // Assuming the token is passed as a Bearer token
+//   const authHeader = req.headers.authorization;
+
+//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//     return res.status(401).json({ message: 'Authorization token is missing or invalid' });
+//   }
+
+//   const token = authHeader.split(' ')[1];  // Extract the token part after 'Bearer'
+
+//   try {
+//     // Verify the token
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     // Find the user by ID
+//     const user = await User.findById(decoded.userId);
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     // Ensure the score is a number before pushing
+//     const numericScore = parseFloat(score);  // Convert the score to a number
+
+//     if (isNaN(numericScore)) {
+//       return res.status(400).json({ message: 'Invalid score format' });
+//     }
+
+//     // Initialize eqScores if it doesn't exist
+//     if (!user.iqScores) {
+//       user.iqScores = [];
+//     }
+
+//     // Push the numeric score to the eqScores array
+//     user.iqScores.push({ score: numericScore });
+
+//     await user.save(); // Save the updated user document
+
+//     console.log("Updated eqScores: ", user.iqScores);  // Debug: log the updated scores
+//     res.json({ message: 'Score saved successfully' });
+//   } catch (error) {
+//     console.error('Error saving score:', error);
+
+//     // Differentiate between different types of errors
+//     if (error.name === 'JsonWebTokenError') {
+//       return res.status(401).json({ message: 'Invalid token' });
+//     }
+
+//     res.status(500).json({ message: 'Error saving score' });
+//   }
+// });
+
+//save iqscore with the check
+router.post('/saveIqscore', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const twoYears = 2 * 365 * 24 * 60 * 60 * 1000;
+    if (user.lastIQAttempt && (Date.now() - user.lastIQAttempt.getTime()) < twoYears) {
+      return res.status(429).json({ 
+        message: 'IQ assessment can only be taken once every 2 years' 
+      });
+    }
+
+    const numericScore = parseFloat(req.body.score);
+    if (isNaN(numericScore)) {
+      return res.status(400).json({ message: 'Invalid score format' });
+    }
+
+    await User.findByIdAndUpdate(req.user.userId, {
+      $push: { iqScores: { score: numericScore } },
+      $set: { lastIQAttempt: new Date() }
+    });
+
+    res.json({ message: 'IQ score saved successfully' });
+  } catch (error) {
+    console.error('Error saving IQ score:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+
+// // Save Technical Score
+// router.post('/saveTechnicalScore', async (req, res) => {
+//   const { score } = req.body;
+
+//   const authHeader = req.headers.authorization;
+//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//     return res.status(401).json({ message: 'Authorization token is missing or invalid' });
+//   }
+
+//   const token = authHeader.split(' ')[1];
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     const user = await User.findById(decoded.userId);
+
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     const numericScore = parseFloat(score);
+//     if (isNaN(numericScore) || numericScore < 0 || numericScore > 50) {
+//       return res.status(400).json({ message: 'Invalid Technical score. Must be between 0 and 50.' });
+//     }
+
+//     if (!user.technicalScores) {
+//       user.technicalScores = [];
+//     }
+
+//     user.technicalScores.push({ score: numericScore });
+//     await user.save();
+
+//     res.json({ message: 'Technical Score saved successfully' });
+//   } catch (error) {
+//     console.error('Error saving score:', error);
+//     if (error.name === 'JsonWebTokenError') {
+//       return res.status(401).json({ message: 'Invalid token' });
+//     }
+//     res.status(500).json({ message: 'Error saving score' });
+//   }
+// });
+
+//with the checks
+router.post('/saveTechnicalScore', authMiddleware, async (req, res) => {
+  const { score } = req.body;
+
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Time restriction check
+    const oneDay = 24 * 60 * 60 * 1000;
+    if (user.lastTechnicalAttempt && (Date.now() - user.lastTechnicalAttempt.getTime()) < oneDay) {
+      return res.status(429).json({ 
+        message: 'Technical quiz can only be attempted once per day' 
+      });
+    }
+
+    // Score validation
+    const numericScore = parseFloat(score);
+    if (isNaN(numericScore)) {
+      return res.status(400).json({ message: 'Invalid score format' });
+    }
+
+    // Save score and update attempt time
+    if (!user.technicalScores) user.technicalScores = [];
+    user.technicalScores.push({ score: numericScore });
+    user.lastTechnicalAttempt = new Date();
+    await user.save();
+
+    res.json({ message: 'Technical score saved successfully' });
+  } catch (error) {
+    console.error('Error saving technical score:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 //gets all three scores 
 router.get('/scores', async (req, res) => {
@@ -420,5 +508,74 @@ router.post('/savetechnicalfield', authMiddleware, async (req, res) => { // Adde
 });
 
 
+//Quiz checks
+// Check if user can attempt Technical Quiz
+router.get('/canAttemptTechnical', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const lastAttempt = user.lastTechnicalAttempt?.getTime() || 0;
+    const canAttempt = !user.lastTechnicalAttempt || (now - lastAttempt) >= oneDay;
+
+    res.json({
+      canAttempt,
+      nextAttempt: canAttempt ? null : new Date(lastAttempt + oneDay).toISOString()
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Check if user can attempt IQ Quiz
+router.get('/canAttemptIQ', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const twoYears = 2 * 365 * 24 * 60 * 60 * 1000;
+    const hasAttempted = !!user.lastIQAttempt;
+    
+    // New users should always be allowed to attempt
+    const canAttempt = !hasAttempted || (Date.now() - user.lastIQAttempt.getTime()) >= twoYears;
+
+    res.json({
+      canAttempt,
+      hasAttempted,
+      nextAttempt: hasAttempted 
+        ? new Date(user.lastIQAttempt.getTime() + twoYears).toISOString()
+        : null
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+// Check if user can attempt EQ Quiz
+router.get('/canAttemptEQ', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const now = Date.now();
+    const sixMonths = 182 * 24 * 60 * 60 * 1000;
+    const lastAttempt = user.lastEQAttempt?.getTime() || 0;
+    const canAttempt = !user.lastEQAttempt || (now - lastAttempt) >= sixMonths;
+
+    res.json({
+      canAttempt,
+      nextAttempt: canAttempt ? null : new Date(lastAttempt + sixMonths).toISOString()
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 module.exports = router;

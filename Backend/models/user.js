@@ -23,7 +23,10 @@ const userSchema = new mongoose.Schema({
     score: Number,
     date: { type: Date, default: Date.now }
   }],
-  
+  // In your User model schema
+lastTechnicalAttempt: Date,
+lastIQAttempt: Date,
+lastEQAttempt: Date,
 });
 
 

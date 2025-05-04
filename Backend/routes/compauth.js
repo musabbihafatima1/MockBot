@@ -1,113 +1,3 @@
-
-// // File: routes/authRoutes.js
-// const express = require("express");
-// const bcrypt = require("bcryptjs");
-// const jwt = require("jsonwebtoken");
-// const { check, validationResult } = require("express-validator");
-// const Usercom = require("../models/CompanyUser");
-
-// const router = express.Router();
-
-// // Signup route
-// router.post(
-//   "/signup",
-//   [
-//     check("username", "Username is required").notEmpty(),
-//     check("organizationName", "Organization Name is required").notEmpty(),
-//     check("email", "Please include a valid email").isEmail(),
-//     check("password", "Password must be at least 6 characters").isLength({ min: 6 }),
-//   ],
-//   async (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return res.status(400).json({ errors: errors.array() });
-//     }
-
-//     const { username, organizationName, email, password } = req.body;
-
-//     try {
-//       // Check if user already exists
-//       let user = await Usercom.findOne({ email });
-//       if (user) {
-//         return res.status(400).json({ msg: "User already exists" });
-//       }
-
-//       // Create new user with "pending" status
-//       user = new Usercom({
-//         username,
-//         organizationName,
-//         email,
-//         password,
-//         status: "pending", // Set status to "pending"
-//       });
-
-//       // Hash password
-//       const salt = await bcrypt.genSalt(10);
-//       user.password = await bcrypt.hash(password, salt);
-
-//       await user.save();
-
-//       res.status(201).json({ msg: "Signup request submitted. Waiting for admin approval." });
-//     } catch (error) {
-//       console.error(error.message);
-//       res.status(500).send("Server error");
-//     }
-//   }
-// );
-
-// // Login route
-// router.post(
-//   "/login",
-//   [
-//     check("email", "Please include a valid email").isEmail(),
-//     check("password", "Password is required").exists(),
-//   ],
-//   async (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return res.status(400).json({ errors: errors.array() });
-//     }
-
-//     const { email, password } = req.body;
-
-//     try {
-//       // Check if user exists
-//       let user = await Usercom.findOne({ email });
-//       if (!user) {
-//         return res.status(400).json({ msg: "Invalid Credentials" });
-//       }
-
-//       // Check if the company is approved
-//       if (user.status !== "approved") {
-//         return res.status(400).json({ msg: "Your account is pending approval or has been rejected." });
-//       }
-
-//       // Compare password
-//       const isMatch = await bcrypt.compare(password, user.password);
-//       if (!isMatch) {
-//         return res.status(400).json({ msg: "Invalid Credentials" });
-//       }
-
-//       // Create JWT token
-//       const payload = {
-//         user: {
-//           id: user.id,
-//         },
-//       };
-
-//       jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" }, (err, token) => {
-//         if (err) throw err;
-//         res.json({ token });
-//       });
-//     } catch (error) {
-//       console.error(error.message);
-//       res.status(500).send("Server error");
-//     }
-//   }
-// );
-
-// module.exports = router;
-
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -270,5 +160,45 @@ router.post(
     }
   }
 );
+
+
+
+// Get Company Name
+
+router.get('/profile', async (req, res) => {
+  try {
+    // Get token from header: Authorization: Bearer <token>
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Not authorized, no token' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const company = await CompanyUser.findById(decoded.user.id).select('organizationName');
+
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+
+    res.json({
+      name: company.organizationName,
+      id: company._id
+    });
+
+  } catch (err) {
+    if (err instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    if (err instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ message: 'Token expired' });
+    }
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 
 module.exports = router;

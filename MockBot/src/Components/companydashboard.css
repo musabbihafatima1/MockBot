@@ -401,8 +401,8 @@
 }
 
 .university-logo-wrapper {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 57px;
   min-width: 48px;
   border-radius: 8px;
   background: var(--main-bg);
@@ -412,9 +412,9 @@
   border: 1px solid var(--border-color);
 }
 
-.university-logo {
-  max-width: 75%;
-  max-height: 75%;
+.university-logo-wrapper img {
+  max-width: 95%;
+  max-height: 95%;
   object-fit: contain;
   filter: grayscale(30%);
   opacity: 0.9;

@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const Review = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userAnswers = [], quizType = "iq", correct = 0, totalQuestions = 0 } = location.state || {};
+  const { userAnswers = [], quizType = "iq", correct = 0, totalQuestions = 0, fieldName = "Technical" } = location.state || {};
 
   const goBackToQuiz = () => {
     switch (quizType) {
@@ -75,8 +75,62 @@ const Review = () => {
       </>
     );
   };
+  const renderTechnicalReview = () => {
+    return userAnswers.map((answer, index) => {
+      const questionNumber = index + 1;
+      const isCorrect = answer.selected === answer.correct;
+      
+      return (
+        <div
+          key={index}
+          style={{
+            backgroundColor: isCorrect ? "#E7F9EA" : "#F4E6FF",
+            padding: "25px",
+            marginBottom: "25px",
+            borderLeft: `8px solid ${isCorrect ? "#2ecc71" : "#5D009F"}`,
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            color: "#000000",
+          }}
+        >
+          <h4 style={{ fontSize: "1.2rem", marginBottom: "15px" }}>
+            Q{questionNumber}: {answer.question}
+          </h4>
 
-  const renderIQOrTechnicalReview = () => {
+          <div style={{ marginBottom: "10px" }}>
+            <strong>Your Answer:</strong>{" "}
+            <span style={{ 
+              color: isCorrect ? "#2ecc71" : "#5D009F",
+              fontWeight: "bold"
+            }}>
+              {answer.selected || "No answer"}
+            </span>
+          </div>
+
+          {!isCorrect && (
+            <div style={{ marginBottom: "10px" }}>
+              <strong>Correct Answer:</strong>{" "}
+              <span style={{ color: "#2ecc71", fontWeight: "bold" }}>
+                {answer.correct}
+              </span>
+            </div>
+          )}
+
+          {answer.explanation && (
+            <div style={{ 
+              marginTop: "15px",
+              padding: "15px",
+              backgroundColor: "#f8f9fa",
+              borderRadius: "8px"
+            }}>
+              <strong>Explanation:</strong> {answer.explanation}
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
+  const renderIQReview = () => {
     return userAnswers.map((item, index) => {
       const isCorrect = item.selected === item.correct;
       return (
@@ -123,51 +177,53 @@ const Review = () => {
 
   return (
     <div
+    style={{
+      padding: "40px 20px",
+      fontFamily: "Poppins, sans-serif",
+      backgroundColor: "#F4F4F4",
+      minHeight: "100vh",
+      color: "#000000",
+    }}
+  >
+    <h2
       style={{
-        padding: "40px 20px",
-        fontFamily: "Poppins, sans-serif",
-        backgroundColor: "#F4F4F4",
-        minHeight: "100vh",
-        color: "#000000",
+        fontSize: "2.5rem",
+        textAlign: "center",
+        color: "#5D009F",
+        marginBottom: "40px",
       }}
     >
-      <h2
-        style={{
-          fontSize: "2.5rem",
-          textAlign: "center",
-          color: "#5D009F",
-          marginBottom: "40px",
-        }}
-      >
-        Review Your Answers
-      </h2>
+      Review Your Answers
+    </h2>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-        {quizType === "eq" ? renderEQReview() : renderIQOrTechnicalReview()}
+    <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+        {quizType === "technical" ? renderTechnicalReview() : 
+         quizType === "eq" ? renderEQReview() : 
+         renderIQReview()}
 
-        <div style={{ textAlign: "center", marginTop: "40px" }}>
-          <button
-            onClick={goBackToQuiz}
-            style={{
-              padding: "14px 30px",
-              backgroundColor: "#5D009F",
-              color: "#fff",
-              border: "none",
-              borderRadius: "10px",
-              fontSize: "16px",
-              cursor: "pointer",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
-              transition: "all 0.3s ease",
-            }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#48017a")}
-            onMouseOut={(e) => (e.target.style.backgroundColor = "#5D009F")}
-          >
-            Try Again
-          </button>
-        </div>
+      <div style={{ textAlign: "center", marginTop: "40px" }}>
+        <button
+          onClick={goBackToQuiz}
+          style={{
+            padding: "14px 30px",
+            backgroundColor: "#5D009F",
+            color: "#fff",
+            border: "none",
+            borderRadius: "10px",
+            fontSize: "16px",
+            cursor: "pointer",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+            transition: "all 0.3s ease",
+          }}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#48017a")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#5D009F")}
+        >
+          {quizType === "technical" ? "Retry Technical Quiz" : "Try Again"}
+        </button>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Review;
