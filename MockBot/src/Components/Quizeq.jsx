@@ -59,9 +59,9 @@ function Quiz({ questions }) {
     const scoreMapping = {
       'Strongly disagree': 1,
       Disagree: 2,
-      Neutral: 3,
-      Agree: 4,
-      'Strongly Agree': 5,
+      Neutral: 0,
+      Agree: 3,
+      'Strongly Agree': 4,
     };
     return scoreMapping[answer] || 0;
   };

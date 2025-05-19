@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const EQQuestion = require("../models/eqQuestions.js"); // Adjust the path to your model
-
+  
 // Fetch EQ questions
 router.get("/", async (req, res) => {
   try {

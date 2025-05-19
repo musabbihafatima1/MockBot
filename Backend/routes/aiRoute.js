@@ -11,17 +11,17 @@ router.post('/generate-mcqs', async (req, res) => {
 
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
-            contents: `Generate ${count} multiple choice questions about ${topic} with first 10 questions easy and next 15 medium and last 25 difficult.
-Format each exactly as:
-Q1. [question]
-A) [option1]
-B) [option2]
-C) [option3]
-D) [option4]
-Correct Answer: [letter]`
-        });
+            contents: `Generate ${count} interview related multiple choice questions about ${topic} with first 10 questions easy and next 15 medium and last 25 difficult.
+            Format each exactly as:
+            Q1. [question]
+            A) [option1]
+            B) [option2]
+            C) [option3]
+            D) [option4]
+            Correct Answer: [letter]`
+                    });
 
-        // 🛠️ Correct way to extract the generated text:
+        
         const text = response.candidates[0].content.parts[0].text;
         console.log('Generated Text:', text);
 
@@ -53,22 +53,22 @@ function parseGeminiResponse(text) {
             const question = {
                 question: lines[0].replace(/^Q\d+\.\s*/, ''),
                 options: [],
-                correctAnswer: -1 // Initialize with invalid index
+                correctAnswer: -1 // Initializing with invalid index
             };
 
             lines.slice(1).forEach(line => {
                 if (/^[A-D]\)/.test(line)) {
-                    // Store just the option text without the letter prefix
+                    // Storing just the option text without the letter prefix
                     question.options.push(line.replace(/^[A-D]\)\s*/, ''));
                 }
                 if (line.startsWith('Correct Answer:')) {
-                    // Convert letter answer to 0-3 index
+                    // Converting letter answer to 0-3 index
                     const answer = line.split(': ')[1].trim().toUpperCase();
                     question.correctAnswer = answer.charCodeAt(0) - 'A'.charCodeAt(0);
                 }
             });
 
-            // Validate the question before adding
+            // Validating the question before adding
             if (question.options.length === 4 && 
                 question.correctAnswer >= 0 && 
                 question.correctAnswer <= 3) {
@@ -106,6 +106,5 @@ function getFallbackQuestions(topic) {
 }
 
 
-// Keep your parseGeminiResponse() and getFallbackQuestions() as they are.
 
 module.exports = router;

@@ -3,7 +3,7 @@ const { generateUniversityReport, sendReportEmail } = require('../utils/reportUt
 
 function scheduleReport() {
   // Debug version (runs every 5 minutes)
-  cron.schedule('*/5 * * * *', async () => {
+  cron.schedule('*/10 * * * *', async () => {
     console.log(`⏱️ [DEBUG] Attempting report generation at ${new Date().toLocaleString('en-PK', { timeZone: 'Asia/Karachi' })} PKT`);
     
     try {

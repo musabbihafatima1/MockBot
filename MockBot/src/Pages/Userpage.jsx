@@ -434,7 +434,7 @@ const Dashboard = () => {
             
             <div style={styles.sidebarDivider} />
             
-            <Link to="/dashboard" style={styles.sidebarItem}>
+            <Link to="/userpage" style={styles.sidebarItem}>
               <FiHome style={styles.sidebarIcon} />
               Dashboard
             </Link>

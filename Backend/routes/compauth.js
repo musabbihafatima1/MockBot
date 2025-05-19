@@ -84,7 +84,7 @@ router.post(
       }
 
       // Hash password
-      const salt = await bcrypt.genSalt(10);
+      const salt = await bcrypt.genSalt(10); 
       user.password = await bcrypt.hash(password, salt);
 
       await user.save();
@@ -148,7 +148,7 @@ router.post(
       jwt.sign(
         payload, 
         process.env.JWT_SECRET, 
-        { expiresIn: "1h" }, 
+        { expiresIn: "4h" }, 
         (err, token) => {
           if (err) throw err;
           res.json({ token });

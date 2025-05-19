@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 const KEYWORDS = {
-  skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'HTML', 'CSS'],
-  education: ['Bachelor', 'Master', 'PhD', 'Degree'],
+  skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'HTML', 'CSS', 'Communication Skills'],
+  education: ['Bachelor', 'Master', 'PhD', 'BS Degree'],
   experience: ['Engineer', 'Developer', 'Manager', 'Intern']
 };
 

@@ -6,6 +6,33 @@ const path = require('path');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 
+
+
+// Get all pending company requests
+router.get('/pending-requests', async (req, res) => {
+  try {
+    const pendingCompanies = await CompanyUser.find({ status: 'pending' });
+    res.json(pendingCompanies);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get all approved companies
+router.get('/registered-companies', async (req, res) => {
+  try {
+    const approvedCompanies = await CompanyUser.find({ status: 'approved' });
+    res.json(approvedCompanies);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+
 // Configure file storage for business documents
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -35,31 +62,6 @@ const upload = multer({
     cb(new Error('Only PDF, DOC, DOCX, JPG, and PNG files are allowed'));
   }
 });
-
-// Get all pending company requests
-router.get('/pending-requests', async (req, res) => {
-  try {
-    const pendingCompanies = await CompanyUser.find({ status: 'pending' });
-    res.json(pendingCompanies);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Get all approved companies
-router.get('/registered-companies', async (req, res) => {
-  try {
-    const approvedCompanies = await CompanyUser.find({ status: 'approved' });
-    res.json(approvedCompanies);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-
-
 //Approve and reject company request with email
 
 

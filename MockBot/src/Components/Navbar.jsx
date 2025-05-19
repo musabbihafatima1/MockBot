@@ -22,8 +22,7 @@ const Navbar = ({ timer }) => {
       <div className="left-section">
         <img src={logo} alt="Logo" className="logo" />
         <div className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/about">About Us</Link>
+          <Link to="/userpage">Home</Link>
         </div>
       </div>
       

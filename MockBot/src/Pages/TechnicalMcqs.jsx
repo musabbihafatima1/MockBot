@@ -208,37 +208,41 @@
 
 //   const handleSubmit = useCallback(() => {
 //     if (state.isSubmitted) return;
-
+  
 //     try {
 //       saveTechnicalQuestions();
-      
 //     } catch (error) {
 //       console.error('Submission error:', error);
 //     }
-
-//     const correctCount = state.questions.reduce((count, question, index) => {
-//       const userAnswer = state.answers[index];
-//       return userAnswer !== undefined && userAnswer === question.correct 
-//         ? count + 1 
-//         : count;
-//     }, 0);
-
+  
+//     const userAnswers = state.questions.map((question, index) => ({
+//       question: question.question,
+//       options: question.options,
+//       selected: question.options[state.answers[index]] || 'No answer',
+//       correct: question.options[question.correct],
+//       codeSnippet: question.codeSnippet, // Add this if available
+//       explanation: question.explanation // Add this if available
+//     }));
+  
+//     const correctCount = userAnswers.filter(answer => 
+//       answer.selected === answer.correct
+//     ).length;
+  
 //     submitTestResults();
-
-    
-    
-    
+  
 //     navigate("/scoreboard", {
 //       state: {
 //         correct: correctCount,
 //         total: state.questions.length,
-//         topic: fieldName,
-//         quizType: "technical"
+//         userAnswers, // Send full answers array
+//         quizType: "technical",
+//         fieldName
 //       }
 //     });
-
+  
 //     setState(prev => ({ ...prev, isSubmitted: true }));
 //   }, [state.isSubmitted, state.questions, state.answers, fieldName, navigate, submitTestResults]);
+  
 
 //   useEffect(() => {
 //     if (state.timer === 0 && !state.isSubmitted) {
@@ -333,6 +337,29 @@
 //             100% { transform: rotate(360deg); }
 //           }
 //         `}</style>
+//     {/* Progress Bar */}
+//          <div style={{
+//         width: '200px',
+//         height: '10px',
+//         borderRadius: '5px',
+//         backgroundColor: '#e0e0e0',
+//         overflow: 'hidden',
+//         boxShadow: 'inset 0 0 5px rgba(0,0,0,0.1)'
+//       }}>
+//         <div style={{
+//           height: '100%',
+//           width: `${state.progress}%`,
+//           background: 'linear-gradient(90deg, #5D009F, black)',
+//           transition: 'width 0.3s ease-in-out'
+//         }} />
+//       </div>
+
+//       <style>{`
+//         @keyframes spin {
+//           0% { transform: rotate(0deg); }
+//           100% { transform: rotate(360deg); }
+//         }
+//       `}</style>
 //       </div>
 //     );
 //   }
@@ -486,7 +513,7 @@
 //         }
 //         .quiz-card {
 //           width: 100%;
-//           max-width: 650px;
+//           max-width: 700px;
 //           background-color: #ffffff;
 //           border-radius: 20px;
 //           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -639,9 +666,10 @@ const TechnicalMcqs = () => {
     currentQuestion: 0,
     selectedOption: null,
     answers: {},
-    timer: 27000, 
+    timer: 27000,
     isSubmitted: false,
-    aiModel: null
+    aiModel: null,
+    progress: 0
   });
 
   const parseMCQs = (rawData) => {
@@ -721,54 +749,103 @@ const TechnicalMcqs = () => {
     ];
   };
 
+  const TOTAL_QUESTIONS = 50;
+  const ESTIMATED_GENERATION_TIME = 27000; // 27 seconds
+
   const fetchQuestions = async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+    setState(prev => ({ ...prev, loading: true, error: null, progress: 0 }));
     
-    try {
-      const response = await axios.post('http://localhost:5000/api/generate-mcqs', 
-        { 
-          topic: fieldName,
-          count: 50
-        },
-        { timeout: 150000 }
+    let animationFrame;
+    const startTime = Date.now();
+    let actualProgress = 0;
+
+    // Progress animation logic
+    const animateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const timeBasedProgress = (elapsed / ESTIMATED_GENERATION_TIME) * 100;
+      
+      // Always show minimum 1% progress every 300ms until 97%
+      const visualProgress = Math.min(
+        Math.max(actualProgress, timeBasedProgress),
+        97
       );
 
-      const parsedQuestions = parseMCQs(response.data.questions);
+      setState(prev => ({
+        ...prev,
+        progress: visualProgress
+      }));
+
+      if (visualProgress < 97) {
+        animationFrame = requestAnimationFrame(animateProgress);
+      }
+    };
+
+    // Start initial animation
+    animationFrame = requestAnimationFrame(animateProgress);
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/generate-mcqs', 
+        { topic: fieldName, count: TOTAL_QUESTIONS },
+        { 
+          timeout: 35000,
+          onDownloadProgress: (progressEvent) => {
+            if (progressEvent.event.lengthComputable) {
+              actualProgress = Math.round(
+                (progressEvent.loaded / progressEvent.total) * 100
+              );
+            }
+          }
+        }
+      );
+
+      // Final progress transition
+      cancelAnimationFrame(animationFrame);
       
-      setState({
+      // Smooth transition to 100%
+      await new Promise(async (resolve) => {
+        setState(prev => ({ ...prev, progress: 97 }));
+        await new Promise(r => setTimeout(r, 200));
+        setState(prev => ({ ...prev, progress: 100 }));
+        await new Promise(r => setTimeout(r, 300));
+        resolve();
+      });
+
+      const parsedQuestions = parseMCQs(response.data.questions);
+      setState(prev => ({
+        ...prev,
         loading: false,
         questions: parsedQuestions.length > 0 ? parsedQuestions : getFallbackQuestions(fieldName),
-        currentQuestion: 0,
-        selectedOption: null,
-        answers: {},
-        timer: 2700,
-        isSubmitted: false,
         aiModel: response.data.model || 'fallback',
         error: parsedQuestions.length === 0 ? 'No valid questions generated' : null
-      });
+      }));
 
     } catch (error) {
       console.error('Failed to load questions:', error);
+      cancelAnimationFrame(animationFrame);
       
-      setState({
+      // Error progress handling
+      await new Promise(async (resolve) => {
+        setState(prev => ({ ...prev, progress: 97 }));
+        await new Promise(r => setTimeout(r, 200));
+        setState(prev => ({ ...prev, progress: 100 }));
+        await new Promise(r => setTimeout(r, 300));
+        resolve();
+      });
+
+      setState(prev => ({
+        ...prev,
         loading: false,
         error: 'AI service unavailable - using fallback questions',
         questions: getFallbackQuestions(fieldName),
-        aiModel: 'fallback',
-        currentQuestion: 0,
-        selectedOption: null,
-        answers: {},
-        timer: 2700,
-        isSubmitted: false
-      });
+        aiModel: 'fallback'
+      }));
+    
     }
   };
-
 
   useEffect(() => {
     fetchQuestions();
   }, [fieldName]);
-
 
   useEffect(() => {
     if (state.loading || state.isSubmitted) return;
@@ -782,8 +859,6 @@ const TechnicalMcqs = () => {
 
     return () => clearInterval(interval);
   }, [state.loading, state.isSubmitted]);
-
-
 
   const submitTestResults = useCallback(async () => {
     try {
@@ -811,8 +886,6 @@ const TechnicalMcqs = () => {
     }
   }, [fieldName, state.answers, state.questions, token, state.timer]);
 
-
-  //saving the technical questions function
   const saveTechnicalQuestions = useCallback(async () => {
     try {
       await axios.post('http://localhost:5000/api/save-technical-questions', {
@@ -824,8 +897,6 @@ const TechnicalMcqs = () => {
       console.error('Failed to save questions:', error);
     }
   }, [fieldName, state.questions, state.aiModel]);
-
-
 
   const handleSubmit = useCallback(() => {
     if (state.isSubmitted) return;
@@ -841,8 +912,8 @@ const TechnicalMcqs = () => {
       options: question.options,
       selected: question.options[state.answers[index]] || 'No answer',
       correct: question.options[question.correct],
-      codeSnippet: question.codeSnippet, // Add this if available
-      explanation: question.explanation // Add this if available
+      codeSnippet: question.codeSnippet,
+      explanation: question.explanation
     }));
   
     const correctCount = userAnswers.filter(answer => 
@@ -855,7 +926,7 @@ const TechnicalMcqs = () => {
       state: {
         correct: correctCount,
         total: state.questions.length,
-        userAnswers, // Send full answers array
+        userAnswers,
         quizType: "technical",
         fieldName
       }
@@ -863,7 +934,6 @@ const TechnicalMcqs = () => {
   
     setState(prev => ({ ...prev, isSubmitted: true }));
   }, [state.isSubmitted, state.questions, state.answers, fieldName, navigate, submitTestResults]);
-  
 
   useEffect(() => {
     if (state.timer === 0 && !state.isSubmitted) {
@@ -952,6 +1022,46 @@ const TechnicalMcqs = () => {
           </div>
         </div>
         <p>Preparing Test for {fieldName}</p>
+
+        <div style={{
+          width: '250px',
+          height: '15px',
+          borderRadius: '10px',
+          backgroundColor: '#f0f0f0',
+          overflow: 'hidden',
+          position: 'relative',
+          boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2)'
+        }}>
+          <div style={{
+            height: '100%',
+            width: `${state.progress}%`,
+            background: 'linear-gradient(90deg, #5D009F 0%, #7A70ED 100%)',
+            transition: state.progress >= 97 
+              ? 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              : 'width 0.1s linear',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            paddingRight: '5px',
+            color: 'white',
+            fontSize: '0.7rem',
+            fontWeight: 'bold',
+            position: 'relative'
+          }}>
+            {Math.round(state.progress)}%
+            <div style={{
+              position: 'absolute',
+              right: '8px',
+              bottom: '-18px',
+              fontSize: '0.6rem',
+              color: '#5D009F',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap'
+            }}>
+              {Math.round((100 - state.progress) * 0.27)}s remaining
+            </div>
+          </div>
+        </div>
         <style>{`
           @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -1023,18 +1133,15 @@ const TechnicalMcqs = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          
-
-          {/* Replace the model indicator code with this */}
-<div className="difficulty-indicator">
-  {state.currentQuestion < 10 ? (
-    <span style={{ color: '#4CAF50' }}>Level: Easy</span>
-  ) : state.currentQuestion < 25 ? (
-    <span style={{ color: '#FF9800' }}>Level: Medium</span>
-  ) : (
-    <span style={{ color: '#F44336' }}>Level: Difficult</span>
-  )}
-</div>
+          <div className="difficulty-indicator">
+            {state.currentQuestion < 10 ? (
+              <span style={{ color: '#4CAF50' }}>Level: Easy</span>
+            ) : state.currentQuestion < 25 ? (
+              <span style={{ color: '#FF9800' }}>Level: Medium</span>
+            ) : (
+              <span style={{ color: '#F44336' }}>Level: Difficult</span>
+            )}
+          </div>
 
           {currentQ && (
             <div className="question">{currentQ.question}</div>
@@ -1111,7 +1218,7 @@ const TechnicalMcqs = () => {
         }
         .quiz-card {
           width: 100%;
-          max-width: 650px;
+          max-width: 800px;
           background-color: #ffffff;
           border-radius: 20px;
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -1123,18 +1230,16 @@ const TechnicalMcqs = () => {
           position: relative;
           min-height: 380px;
         }
-       
         .difficulty-indicator {
-          
-            position: absolute;
-            top: 15px;
-            center: 0px;
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background: rgba(0,0,0,0.1);
-
+          position: absolute;
+          top: 15px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 5px 10px;
+          border-radius: 12px;
+          font-size: 0.8rem;
+          font-weight: bold;
+          background: rgba(0,0,0,0.1);
         }
         .question {
           margin-top: 50px;

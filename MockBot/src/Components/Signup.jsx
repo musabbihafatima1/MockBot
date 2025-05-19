@@ -378,7 +378,7 @@ const Signup = () => {
           color: "white",
         }}
       >
-        <img src={vectorImage} alt="Vector" style={{ width: "320px" }} />
+        <img src={vectorImage} alt="Vector" style={{ width: "80%", maxWidth: "450px" }} />
         <p style={{ fontSize: "1.2rem", marginTop: "20px", maxWidth: "80%", marginBottom: "130px" }}>
           Take a Quiz, be more creative in your work
         </p>

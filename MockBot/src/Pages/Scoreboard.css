@@ -16,8 +16,8 @@
     background: rgb(248, 243, 243);
     color: purple;
     border-radius: 50%;
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
     display: flex;
     flex-direction: column;
     justify-content: center;
